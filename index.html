@@ -1,0 +1,1991 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>라이프플랜</title>
+<meta name="description" content="우리 집 자산·현금흐름·은퇴 계획 — 데이터는 이 기기에만 저장">
+<meta name="theme-color" content="#080C12">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#4A90D9;--good:#2ECC7A;--bad:#E85555;--warn:#E8A020;
+  --c0:#4A90D9;--c1:#2ECC7A;--c2:#E8A020;--c3:#C06AF0;--c4:#E85555;--c5:#3BC3C3;
+  --mono:'DM Mono',monospace;--sans:'Noto Sans KR',sans-serif;
+  --f-xs:13px;--f-sm:15px;--f-md:17px;--f-lg:22px;--f-xl:30px;
+}
+[data-theme=dark]{
+  --bg:#080C12;--s1:#0F1520;--s2:#161E2E;--s3:#1E2A3E;
+  --bd:#253047;--t1:#C8D8EC;--t2:#6B84A0;--t3:#344560;
+  --debt-bg:#221822;--debt-bd:#4A2C3A;
+}
+[data-theme=light]{
+  --bg:#EEF3FB;--s1:#FFFFFF;--s2:#F5F8FF;--s3:#EAF0FA;
+  --bd:#DDE6F5;--t1:#1A2540;--t2:#6B7A99;--t3:#B0BAD0;
+  --debt-bg:#FDEEF1;--debt-bd:#F4CAD3;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:var(--f-md);line-height:1.45}
+button,input,select{font:inherit;color:inherit}
+.num{font-family:var(--mono)}
+header{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--bd);
+  padding:calc(10px + env(safe-area-inset-top)) 14px 10px;display:flex;align-items:center;gap:8px}
+header h1{font-size:var(--f-lg);font-weight:700;flex:1}
+.hbtn{background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:6px 10px;font-size:var(--f-sm);cursor:pointer}
+#cloud{font-size:var(--f-xs);color:var(--t2)}
+main{max-width:640px;margin:0 auto;padding:12px 12px calc(90px + env(safe-area-inset-bottom))}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--s1);border-top:1px solid var(--bd);
+  display:flex;padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;min-width:0;white-space:nowrap;background:none;border:0;padding:9px 1px 8px;font-size:var(--f-xs);color:var(--t2);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button .ic{font-size:20px;line-height:1}
+nav button.on{color:var(--accent);font-weight:700}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
+.card h2{font-size:var(--f-md);font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.card h2 .sp{flex:1}
+.muted{color:var(--t2);font-size:var(--f-sm)}
+.tiny{color:var(--t2);font-size:var(--f-xs)}
+.big{font-size:var(--f-xl);font-weight:500}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kv{background:var(--s2);border-radius:10px;padding:10px}
+.kv .k{font-size:var(--f-xs);color:var(--t2)}
+.kv .v{font-size:var(--f-md);font-family:var(--mono);margin-top:2px}
+.row{display:flex;align-items:center;gap:10px;padding:10px 2px;border-top:1px solid var(--bd);cursor:pointer}
+.row:first-of-type{border-top:0}
+.row .m{flex:1;min-width:0}
+.row .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .v{font-family:var(--mono);text-align:right;white-space:nowrap}
+.grp{font-size:var(--f-sm);color:var(--t2);margin:14px 2px 2px;display:flex;justify-content:space-between}
+.grp:first-child{margin-top:0}
+.grp.big{font-size:19px;font-weight:700;color:var(--t1);margin:20px 2px 4px;padding-bottom:6px;border-bottom:1px solid var(--bd)}
+.grp.big:first-of-type{margin-top:4px}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;font-size:var(--f-sm)}
+.btn.sub{background:var(--s3);color:var(--t1)}
+.btn.bad{background:var(--bad)}
+.btn.sm{padding:6px 10px;font-size:var(--f-xs)}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.tag{display:inline-block;font-size:var(--f-xs);padding:1px 7px;border-radius:99px;background:var(--s3);color:var(--t2);margin-left:6px;vertical-align:middle}
+.pos{color:var(--good)}.neg{color:var(--bad)}.wrn{color:var(--warn)}
+table{width:100%;border-collapse:collapse;font-size:var(--f-sm)}
+th,td{padding:7px 4px;border-top:1px solid var(--bd);text-align:right}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--t2);font-weight:500;font-size:var(--f-xs)}
+td{font-family:var(--mono);white-space:nowrap}
+label.f{display:block;margin-bottom:10px;font-size:var(--f-sm);color:var(--t2)}
+label.f input,label.f select{display:block;width:100%;margin-top:4px;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--s2);color:var(--t1);font-size:var(--f-md)}
+label.chk{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:var(--f-sm)}
+label.chk input{width:20px;height:20px}
+.modal{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.55);display:none;align-items:flex-end;justify-content:center}
+.modal.on{display:flex}
+.sheet{background:var(--s1);width:100%;max-width:640px;max-height:90vh;overflow:auto;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+.sheet h3{font-size:var(--f-lg);margin-bottom:14px}
+.chk-item{display:flex;gap:10px;align-items:flex-start;padding:10px 2px;border-top:1px solid var(--bd)}
+.chk-item:first-child{border-top:0}
+.chk-item input{width:22px;height:22px;margin-top:2px;flex:none}
+.chk-item .tx{flex:1}
+.chk-item.done .tx{color:var(--t2);text-decoration:line-through}
+.chk-item .x{background:none;border:0;color:var(--t2);font-size:20px;cursor:pointer}
+#toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--s3);border:1px solid var(--bd);
+  padding:9px 14px;border-radius:10px;font-size:var(--f-sm);opacity:0;transition:opacity .25s;pointer-events:none;z-index:60;max-width:90vw}
+#toast.on{opacity:1}
+svg text{font-family:var(--mono)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:var(--f-xs);color:var(--t2)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.empty{color:var(--t2);font-size:var(--f-sm);padding:8px 2px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1px solid var(--bd);background:var(--s1);color:var(--t2);border-radius:99px;padding:5px 12px;font-size:var(--f-sm);cursor:pointer}
+.chip{white-space:nowrap;padding:5px 10px}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tblwrap table{min-width:100%;white-space:nowrap}
+.tblwrap th,.tblwrap td{padding:6px 3px}
+.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.mgrid label{font-size:var(--f-xs);color:var(--t2)}
+.mgrid input{width:100%;padding:8px 6px;border-radius:8px;border:1px solid var(--bd);background:var(--s2);color:var(--t1);font-family:var(--mono);font-size:var(--f-sm);text-align:right}
+.grid{display:block}
+.incg{margin-top:6px} .incg+.incg{border-top:1px solid var(--bd);padding-top:8px;margin-top:8px}
+.incg-h{display:flex;align-items:center;gap:8px;margin-bottom:2px} .incg-h b{font-size:var(--f-md)}
+.gaprow{cursor:default;opacity:.85}
+.hbars{margin:4px 0 12px;display:flex;flex-direction:column;gap:8px}
+.hb{display:grid;grid-template-columns:86px minmax(0,1fr) 86px;align-items:center;gap:8px;cursor:pointer;font-size:var(--f-sm)}
+.hb .hl{color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hb .ht{height:16px;background:var(--s2);border-radius:4px;overflow:hidden}
+.hb .ht i{display:block;height:100%;border-radius:0 4px 4px 0}
+.hb .hv{text-align:right;white-space:nowrap} .hb .hv small{color:var(--t2);font-size:var(--f-xs)}
+.simL,.simR{display:block}
+.pc,.pcI{display:none}
+@media (hover:hover){ .row:hover{background:var(--s2);border-radius:8px} tr:hover td{background:var(--s2)} .chip:hover,.hbtn:hover{border-color:var(--accent)} }
+@media (min-width:640px){
+  main{max-width:760px;padding:16px 20px calc(90px + env(safe-area-inset-bottom))}
+  .modal{align-items:center}
+  .sheet{max-width:540px;border-radius:16px;max-height:86vh;padding:20px}
+}
+@media (min-width:1024px){
+  body{padding-left:208px}
+  header{padding:14px 28px}
+  nav{top:0;bottom:0;left:0;right:auto;width:208px;flex-direction:column;border-top:0;border-right:1px solid var(--bd);padding:76px 12px 20px;gap:4px}
+  nav::before{content:'라이프플랜';position:absolute;top:22px;left:26px;font-weight:700;font-size:var(--f-lg);color:var(--t1)}
+  nav button{flex:none;flex-direction:row;justify-content:flex-start;gap:12px;padding:11px 14px;border-radius:10px;font-size:var(--f-sm)}
+  nav button .ic{width:22px;text-align:center}
+  nav button.on{background:var(--s2)}
+  main{max-width:1320px;padding:22px 28px 48px}
+  #toast{bottom:28px}
+  .mob{display:none}
+  .pc{display:block} .pcI{display:inline}
+  .kpis.pc{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:16px}
+  .kpi{background:var(--s1);border:1px solid var(--bd);border-radius:14px;padding:14px 16px;min-height:86px}
+  .kpi .k{font-size:var(--f-xs);color:var(--t2)}
+  .kpi .v{font-size:22px;font-weight:700;margin-top:6px;white-space:nowrap}
+  .lay{display:grid;grid-template-columns:minmax(0,2fr) minmax(330px,1fr);gap:16px;align-items:start}
+  .lay .card{margin:0 0 16px}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .lay>.colL>.chips,.lay>.colL>.tiny{margin-bottom:12px}
+  .g-sim{display:grid;grid-template-columns:380px minmax(0,1fr);gap:16px;align-items:start}
+  .simL{position:sticky;top:80px} .simL>.card,.simR>.card{margin:0 0 16px}
+  .g-todo{max-width:760px;margin:0 auto}
+  .g-dash .lay{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .dnut-big{gap:28px!important;justify-content:center;padding:10px 0}
+  .dnut-big svg{width:260px;height:260px}
+  .dnut-big .legend{flex:0 1 auto!important;gap:14px!important;font-size:var(--f-md)}
+  .dnut-big .legend i{width:12px;height:12px}
+  .dnut-big .legend b{font-weight:500;color:var(--t2)}
+}
+.alert{background:var(--s2);border-left:3px solid var(--warn);border-radius:8px;padding:10px;font-size:var(--f-sm);margin-bottom:10px}
+</style>
+</head>
+<body>
+<header>
+  <h1>라이프플랜</h1>
+  <span id="cloud"></span>
+  <button class="hbtn" id="hideBtn" onclick="toggleHide()" aria-label="금액 숨김"></button>
+  <button class="hbtn" onclick="openSettings()" aria-label="설정">⚙</button>
+</header>
+<main id="view"></main>
+<nav id="nav"></nav>
+<div class="modal" id="modal" onclick="if(event.target===this)closeModal()"><div class="sheet" id="sheet"></div></div>
+<div id="toast"></div>
+<input type="file" id="file" accept="application/json,.json" style="display:none" onchange="importFile(this)">
+
+<script>
+/* ════════ 기본 상수 ════════ */
+var CATS = {realestate:'부동산', stock:'주식', pension:'연금계좌', mutual:'적금·저축성', cash:'현금·예금', other:'기타'};
+var CAT_COLOR = {realestate:'var(--c2)', stock:'var(--c0)', pension:'var(--c1)', mutual:'var(--c3)', cash:'var(--c5)', other:'var(--c4)'};
+var JOBS = {public:'공무원·교사·군인', company:'회사원', self:'자영업·프리랜서', none:'은퇴·무직'};
+function jobOptions(sel){ return Object.keys(JOBS).map(function(k){ return '<option value="'+k+'" '+(k===(sel||'company')?'selected':'')+'>'+JOBS[k]+'</option>'; }).join(''); }
+function jobOf(key){ var m = (S.members || []).find(function(x){ return x.name === key; }); return (m && m.job) || 'company'; }
+function pensionName(key){ return jobOf(key) === 'public' ? '공무원연금' : '국민연금'; }
+var FIN_CATS = ['stock','pension','mutual','cash','other'];   // 시뮬레이션에 넣는 금융자산
+var TABS = [
+  {id:'dash', name:'대시보드', ic:'◎'},
+  {id:'assets', name:'자산', ic:'▤'},
+  {id:'alloc', name:'예산', ic:'◫'},
+  {id:'money', name:'수입지출', ic:'₩'},
+  {id:'flow', name:'현금흐름', ic:'⇄'},
+  {id:'sim', name:'시뮬', ic:'↗'},
+  {id:'todo', name:'할 일', ic:'✓'}
+];
+var BUCKETS = {reserve:'① 생활 예비', gap:'② 공백 대비', growth:'③ 장기투자'};
+var BUCKET_DESC = {reserve:'비상금·교육비 — 예금·MMF', gap:'소득이 생활비보다 적은 기간용 — 예금·채권 등 안전자산', growth:'나머지 전부 — 지수 ETF (비중은 리밸런서)'};
+var BUCKET_COLOR = {reserve:'var(--c5)', gap:'var(--c2)', growth:'var(--c0)'};
+function defaultBucket(cat){ return cat === 'cash' ? 'reserve' : (FIN_CATS.indexOf(cat) >= 0 ? 'growth' : ''); }
+var LS_DATA = 'lp_data', LS_SNAPS = 'lp_snaps', LS_META = 'lp_meta';
+
+function defaultData(){
+  return {
+    version:1,
+    members:[{name:'본인', nick:'', job:'company'}],
+    assets:[], debts:[], incomes:[], lumps:[],
+    sim:{rate:4, lifeStart:'', saveBefore:0, spend:300, endYear:2070},
+    checklist:[],
+    buckets:{reserve:{target:null}, gap:{target:null}},
+    moves:[],          // 버킷 이동 계획 {id, month, text, done}
+    rbMap:{},          // 리밸런서 계좌 이름 → 자산 id ('' = 제외)
+    salary:{},         // {연도:{이름:{months:[12개, 만원], extras:[{id,name,month,amount}]}}}
+    expenses:[],       // 고정지출 {id,cat,name,owner,monthly,start,end,note}
+    family:[]          // 가족 {id,name,birth:'YYYY-MM-DD',rel}
+  };
+}
+
+/* ════════ 상태 ════════ */
+var S = loadLocal();
+var SNAPS = loadSnaps();           // { 'YYYY-MM': {net_worth,total_assets,total_debts,breakdown} }
+var META = loadMeta();             // { base: 서버 updated_at, dirty: bool }
+var TAB = localStorage.getItem('lp_tab') || 'dash';
+var HIDE = localStorage.getItem('lp_hide') === '1';     // 금액 숨김
+var OWNER = localStorage.getItem('lp_owner') || '';     // 명의 필터 ('' = 전체)
+
+function loadLocal(){
+  try{ var d = JSON.parse(localStorage.getItem(LS_DATA)); if(d && d.version) return normalize(d); }catch(e){}
+  return defaultData();
+}
+function normalize(d){
+  var def = defaultData();
+  ['members','assets','debts','incomes','lumps','checklist'].forEach(function(k){ if(!Array.isArray(d[k])) d[k] = def[k]; });
+  d.sim = Object.assign({}, def.sim, d.sim || {});
+  if(!Array.isArray(d.sim.phases)) d.sim.phases = [];
+  if(!d.sim.spendMode) d.sim.spendMode = 'manual';
+  if(!d.salary || typeof d.salary !== 'object') d.salary = {};
+  if(!Array.isArray(d.expenses)) d.expenses = [];
+  if(!Array.isArray(d.family)) d.family = [];
+  fixMemberKeys(d);
+  var mnames = (d.members || []).map(function(m){ return m.name; });
+  d.incomes.forEach(function(x){ if(x.kind == null && /근로소득|급여|월급/.test(x.name || '') && mnames.indexOf(x.owner) >= 0) x.kind = 'salary'; });
+  if(!Array.isArray(d.moves)) d.moves = [];
+  if(!d.rbMap || typeof d.rbMap !== 'object') d.rbMap = {};
+  d.buckets = d.buckets || {};
+  ['reserve','gap'].forEach(function(k){ d.buckets[k] = Object.assign({target:null}, d.buckets[k] || {}); });
+  d.assets.forEach(function(a){ if(a.bucket === undefined) a.bucket = defaultBucket(a.cat); delete a.rb;
+    if(/^(리밸런서 .* 기준|실거래 중간값 .*)$/.test(a.note || '')){ a.src = a.note; a.note = ''; }
+    var m1 = /^리밸런서 (\d{4})-(\d{2})-\d{2} 기준$/.exec(a.src || ''), m2 = /^실거래 중간값 (.*)$/.exec(a.src || '');
+    if(m1){ a.srcDetail = a.src.replace(' 기준',' 기록'); a.src = '리밸런서 적용 (' + (+m1[2]) + '월)'; }
+    if(m2){ a.srcDetail = '중간값 ' + m2[1]; a.src = '실거래가 적용'; } });
+  d.version = 1;
+  return d;
+}
+function loadSnaps(){ try{ return JSON.parse(localStorage.getItem(LS_SNAPS)) || {}; }catch(e){ return {}; } }
+function loadMeta(){ try{ return JSON.parse(localStorage.getItem(LS_META)) || {}; }catch(e){ return {}; } }
+function saveMeta(){ localStorage.setItem(LS_META, JSON.stringify(META)); }
+
+function commit(){              // 데이터가 바뀔 때마다 호출
+  localStorage.setItem(LS_DATA, JSON.stringify(S));
+  META.dirty = true; saveMeta();
+  render();
+  askPersist();
+}
+
+/* ════════ 유틸 ════════ */
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function uid(){ return Math.random().toString(36).slice(2,10); }
+function num(v){ var n = parseFloat(String(v).replace(/,/g,'')); return isFinite(n) ? n : 0; }
+// 금액 단위: 만원
+function fm(v){
+  if(HIDE) return '••••';
+  var s = v < 0 ? '-' : ''; v = Math.abs(Math.round(v));
+  if(v >= 10000){ return s + (Math.round(v/100)/100).toLocaleString('ko-KR') + '억'; }
+  return s + v.toLocaleString('ko-KR') + '만';
+}
+function ymIdx(s){ if(!s) return null; var p = String(s).split('-'); return (+p[0])*12 + (+p[1]) - 1; }
+function idxYm(i){ var y = Math.floor(i/12), m = i%12 + 1; return y + '-' + (m<10?'0':'') + m; }
+function ymDot(s){ return s ? s.replace('-', '.') : ''; }
+function nowIdx(){ var d = new Date(); return d.getFullYear()*12 + d.getMonth(); }
+function thisMonth(){ return idxYm(nowIdx()); }
+function sum(a, f){ return a.reduce(function(s,x){ return s + (f ? f(x) : x); }, 0); }
+function toast(msg){ var t = document.getElementById('toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast._t); toast._t = setTimeout(function(){ t.classList.remove('on'); }, 2400); }
+
+/* ════════ 계산 ════════ */
+function byOwner(list){ return OWNER ? list.filter(function(x){ return (x.owner || '') === OWNER; }) : list; }
+function totals(all){
+  var A = all ? S.assets : byOwner(S.assets), D = all ? S.debts : byOwner(S.debts);
+  var assets = sum(A, function(a){ return num(a.value); });
+  var debts = sum(D, function(d){ return num(d.value); });
+  var byCat = {};
+  A.forEach(function(a){ byCat[a.cat] = (byCat[a.cat]||0) + num(a.value); });
+  var fin = sum(A.filter(function(a){ return FIN_CATS.indexOf(a.cat) >= 0; }), function(a){ return num(a.value); });
+  return {assets:assets, debts:debts, net:assets-debts, byCat:byCat, fin:fin};
+}
+// 급여 항목: 수입지출 탭 급여 장부와 연동 (그달 실제 입력값 → 없으면 가장 최근 연도 월 환산)
+function isSalary(x){ return x.kind === 'salary'; }
+function ledgerMonthly(who, i){
+  var y = Math.floor(i/12), m = i%12, P = (S.salary[y] || {})[who];
+  var pay = P && P.months ? Math.floor(num(P.months[m]) + 1e-9) : 0;
+  if(pay > 0) return {v: pay + sum(allExtras(y, P).filter(function(e){ return num(e.month) === m+1; }), function(e){ return Math.floor(num(e.amount) + 1e-9); }), src:'actual'};
+  // 월급은 실수령을 입력한 가장 최근 연도의 월 평균, 수당은 그해 기록(본봉 자동 포함)이 있으면 그해 것, 없으면 같은 연도 것
+  var hasMonths = function(k){ var s = salStat(k, who); return s && s.n > 0; };
+  var all = Object.keys(S.salary).map(Number);
+  var ys = all.filter(function(k){ return k <= y && hasMonths(k); }).sort(function(a,b){ return b-a; });
+  if(!ys.length) ys = all.filter(hasMonths).sort(function(a,b){ return a-b; });
+  if(ys.length){
+    var base = salStat(ys[0], who), P0 = S.salary[ys[0]][who], Py = (S.salary[y] || {})[who];
+    var autoPart = Py && autoOn(Py) ? autoExtras(y, Py) : autoExtras(ys[0], P0);       // 명절·연가: 그해 본봉이 있으면 그해 것
+    var mSrc = Py && (Py.extras || []).length ? Py : P0, anyAuto = autoPart.length > 0;   // 성과상여금 등: 그해 기록 없으면 최근 연도 것
+    var manual = (mSrc.extras || []).filter(function(e){ return !(anyAuto && AUTO_NAME.test(e.name)); });
+    var ex = sum(autoPart.concat(manual), function(e){ return Math.floor(num(e.amount) + 1e-9); });
+    return {v: Math.round(base.avg + ex/12), src:'avg', year: ys[0]};
+  }
+  return null;
+}
+function incomeItemAt(x, i){
+  if(isSalary(x)){ var l = ledgerMonthly(x.owner, i); if(l) return l.v; }
+  return num(x.monthly);
+}
+// 급여 항목에 끝 월이 없으면 가족 정보의 퇴직 월(없으면 정년)까지로 봄
+function incEnd(x){
+  var e = ymIdx(x.end); if(e != null || !isSalary(x)) return e;
+  var f = S.family.find(function(m){ return (m.rel === '본인' || m.rel === '배우자') && memberOf(m) === x.owner && m.birth; });
+  return f ? retireIdx(f) : null;
+}
+function incomeAt(i){
+  return sum(S.incomes.filter(function(x){
+    var s = ymIdx(x.start), e = incEnd(x);
+    return (s == null || s <= i) && (e == null || i <= e);
+  }), function(x){ return incomeItemAt(x, i); });
+}
+function lumpAt(i){
+  return sum(S.lumps.filter(function(x){ return lumpHits(x, i); }), function(x){ return num(x.amount); });
+}
+// 그 달에 해당하는 목돈인지 (매년 반복이면 같은 달, 반복 끝까지)
+function lumpHits(x, i){
+  var s = ymIdx(x.month); if(s == null) return false;
+  if(!x.repeat) return !x.done && s === i;
+  if(x.ack != null && i <= x.ack) return false;
+  var e = ymIdx(x.until);
+  return i >= s && (e == null || i <= e) && (i - s) % 12 === 0;
+}
+// 오늘 이후 처음 돌아오는 달 (반복 목돈은 다음 회차)
+function lumpNext(x, from){
+  var s = ymIdx(x.month); if(s == null) return null;
+  if(!x.repeat) return s >= from ? s : null;
+  var e = ymIdx(x.until), i = s;
+  while(i < from) i += 12;
+  return (e == null || i <= e) ? i : null;
+}
+// 금융자산 시뮬레이션 (실질, 만원). 생활비 시작 전: 월 저축액만 더함 / 시작 후: 소득 − 생활비
+function simulate(){
+  var sim = S.sim, r = Math.pow(1 + num(sim.rate)/100, 1/12) - 1;
+  var start = nowIdx(), end = num(sim.endYear)*12 + 11, life = ymIdx(sim.lifeStart) || start;
+  var bal = totals(true).fin, years = [], yNet = 0, yIn = 0, minV = bal, minI = start, firstNeg = null;
+  for(var i = start; i <= end; i++){
+    bal *= (1 + r);
+    var inc = incomeAt(i);
+    var net = i < life ? num(sim.saveBefore) : inc - spendAt(i);
+    net += lumpAt(i);
+    bal += net; yNet += net; yIn += inc;
+    if(bal < minV){ minV = bal; minI = i; }
+    if(bal < 0 && firstNeg == null) firstNeg = i;
+    if(i % 12 === 11 || i === end){ years.push({y:Math.floor(i/12), bal:bal, net:yNet}); yNet = 0; yIn = 0; }
+  }
+  return {years:years, minV:minV, minI:minI, firstNeg:firstNeg, start:totals(true).fin};
+}
+// 월 소득이 같은 구간끼리 묶기
+// 그 달의 월 생활비: 기본값(생활비 시작부터) → 기간별 생활비 중 시작월이 지난 마지막 구간
+function spendAt(i){
+  var life = ymIdx(S.sim.lifeStart);
+  if(life != null && i < life) return null;
+  if(S.sim.spendMode === 'expenses') return expenseAt(i) + debtCostAt(i);
+  var v = num(S.sim.spend);
+  sortedPhases().forEach(function(p){ var f = ymIdx(p.from); if(f != null && f <= i) v = num(p.monthly); });
+  return v + debtCostAt(i);
+}
+// 고정지출 합계 (저축 분류 제외)
+var EXP_COLOR = {living:'var(--c0)', allowance:'var(--c2)', family:'var(--c1)', insurance:'var(--c3)', edu:'var(--c4)', house:'var(--c5)', tax:'var(--t2)', etc:'var(--t3, var(--t2))'};
+var EXP_CATS = {living:'생활비', insurance:'보험', edu:'학원·교육', house:'관리비·통신', tax:'세금', allowance:'용돈·식대', family:'부모님 지원', saving:'저축 (지출 아님)', etc:'기타'};
+function expEnd(x){ var l = linkEnd(x); return l != null ? l : ymIdx(x.end); }
+function expActive(x, i){ var s = ymIdx(x.start), e = expEnd(x); return (s == null || s <= i) && (e == null || i <= e); }
+function expenseAt(i){ return sum(S.expenses.filter(function(x){ return x.cat !== 'saving' && expActive(x, i); }), function(x){ return num(x.monthly); }); }
+// 부채 월 비용: 월 상환액이 있으면 그 금액, 없으면 이자 (끝 월까지)
+function debtCostAt(i){
+  return sum(S.debts.filter(function(d){ var e = ymIdx(d.end), s = ymIdx(d.start); return (num(d.pay) > 0 || num(d.rate) > 0) && (s == null || s <= i) && (e == null || i <= e); }),
+    function(d){ return num(d.pay) > 0 ? num(d.pay) : num(d.value) * num(d.rate) / 100 / 12; });
+}
+function sortedPhases(){ return (S.sim.phases || []).slice().sort(function(a,b){ return (a.from||'').localeCompare(b.from||''); }); }
+// 월 소득·생활비가 같은 구간끼리 묶기
+function incomePeriods(){
+  var start = nowIdx(), end = num(S.sim.endYear)*12 + 11, out = [], cur = null;
+  for(var i = start; i <= end; i++){
+    var v = incomeAt(i), s = spendAt(i), pre = false;
+    // 은퇴 전(생활비 시작 전)에는 표에 참고용으로 고정지출 합계를 보여 줌 (시뮬레이션 계산에는 쓰지 않음)
+    if(s == null && S.expenses.length){ s = Math.round(expenseAt(i) + debtCostAt(i)); pre = true; }
+    if(cur && cur.v === v && cur.s === s && cur.pre === pre){ cur.to = i; }
+    else { cur = {from:i, to:i, v:v, s:s, pre:pre}; out.push(cur); }
+  }
+  return out;
+}
+
+/* ════════ 차트 (SVG) ════════ */
+function donut(parts, big){
+  var tot = sum(parts, function(p){ return p.v; });
+  if(tot <= 0) return '<div class="empty">자산을 입력하면 비중이 보입니다</div>';
+  var R = 54, C = 2*Math.PI*R, off = 0, segs = '';
+  parts.forEach(function(p){
+    var len = C * p.v / tot;
+    segs += '<circle cx="70" cy="70" r="'+R+'" fill="none" stroke="'+p.c+'" stroke-width="22" stroke-dasharray="'+len+' '+(C-len)+'" stroke-dashoffset="'+(-off)+'" transform="rotate(-90 70 70)"/>';
+    off += len;
+  });
+  var leg = parts.map(function(p){ return '<span><i style="background:'+p.c+'"></i>'+esc(p.n)+' '+Math.round(p.v/tot*100)+'%'+(big?'<b class="num pcI"> · '+fm(p.v)+'</b>':'')+'</span>'; }).join('');
+  return '<div class="'+(big?'dnut-big':'')+'" style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><svg width="140" height="140" viewBox="0 0 140 140">'+segs+'</svg><div class="legend" style="flex:1;flex-direction:column;gap:6px">'+leg+'</div></div>';
+}
+function lineChart(pts, opt){
+  opt = opt || {};
+  if(pts.length < 2) return '<div class="empty">'+(opt.empty || '기록이 두 개 이상이면 그래프가 보입니다')+'</div>';
+  var W = 600, H = 220, L = 52, Rr = 12, T = 12, B = 28;
+  var ys = pts.map(function(p){ return p.y; }); var mn = Math.min.apply(null, ys), mx = Math.max.apply(null, ys);
+  if(opt.zero !== false || mn < 0) mn = Math.min(0, mn); else { var pad = (mx-mn)*0.15 || mx*0.05; mn = Math.max(0, mn-pad); mx = mx+pad; }
+  if(mx === mn) mx = mn + 1;
+  var X = function(i){ return L + (W-L-Rr) * i/(pts.length-1); };
+  var Y = function(v){ return T + (H-T-B) * (1 - (v-mn)/(mx-mn)); };
+  var g = '', k;
+  for(k = 0; k <= 4; k++){ var v = mn + (mx-mn)*k/4; g += '<line x1="'+L+'" x2="'+(W-Rr)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--bd)" stroke-width="1"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" font-size="12" fill="var(--t2)" text-anchor="end">'+fm(v)+'</text>'; }
+  if(mn < 0) g += '<line x1="'+L+'" x2="'+(W-Rr)+'" y1="'+Y(0)+'" y2="'+Y(0)+'" stroke="var(--bad)" stroke-width="1"/>';
+  var step = Math.max(1, Math.ceil(pts.length/7));
+  pts.forEach(function(p,i){ if(i % step === 0 || i === pts.length-1) g += '<text x="'+X(i)+'" y="'+(H-8)+'" font-size="12" fill="var(--t2)" text-anchor="'+(i===pts.length-1?'end':i===0?'start':'middle')+'">'+esc(p.x)+'</text>'; });
+  var d = pts.map(function(p,i){ return (i?'L':'M') + X(i).toFixed(1) + ' ' + Y(p.y).toFixed(1); }).join(' ');
+  var marks = (opt.marks || []).map(function(m){ var i = pts.findIndex(function(p){ return p.x === m.x; }); if(i < 0) return '';
+    return '<line x1="'+X(i)+'" x2="'+X(i)+'" y1="'+T+'" y2="'+(H-B)+'" stroke="'+m.c+'" stroke-dasharray="4 4"/><text x="'+(X(i)+4)+'" y="'+(T+12)+'" font-size="11" fill="'+m.c+'">'+esc(m.t)+'</text>'; }).join('');
+  var last = pts[pts.length-1];
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%">'+g+marks+'<path d="'+d+'" fill="none" stroke="var(--accent)" stroke-width="2.5"/>'+
+    '<circle cx="'+X(pts.length-1)+'" cy="'+Y(last.y)+'" r="4" fill="var(--accent)"/></svg>';
+}
+function barChart(bars, line){
+  if(!bars.length) return '';
+  var W = 600, H = 220, L = 48, Rr = 8, T = 12, B = 28;
+  var mx = Math.max.apply(null, bars.map(function(b){ return Math.max(b.v, b.line || 0); })) || 1;
+  var bw = (W-L-Rr) / bars.length;
+  var Y = function(v){ return T + (H-T-B) * (1 - v/mx); };
+  var g = '', k;
+  for(k = 0; k <= 4; k++){ var v = mx*k/4; g += '<line x1="'+L+'" x2="'+(W-Rr)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="var(--bd)"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" font-size="12" fill="var(--t2)" text-anchor="end">'+(HIDE?'':Math.round(v).toLocaleString())+'</text>'; }
+  var step = Math.max(1, Math.ceil(bars.length/8));
+  bars.forEach(function(b,i){
+    var x = L + bw*i + bw*0.15, w = bw*0.7, y = Y(b.v);
+    g += '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+Math.max(0,(H-B)-y)+'" rx="2" fill="'+b.c+'"><title>'+esc(b.x)+': 월 '+fm(b.v)+'</title></rect>';
+    if(i % step === 0) g += '<text x="'+(x+w/2)+'" y="'+(H-8)+'" font-size="12" fill="var(--t2)" text-anchor="middle">'+esc(b.x)+'</text>';
+  });
+  var lp = bars.map(function(b,i){ return b.line == null ? null : [L + bw*i + bw/2, Y(b.line)]; });
+  var d = '', on = false;
+  lp.forEach(function(p){ if(!p){ on = false; return; } d += (on?'L':'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + ' '; on = true; });
+  if(d) g += '<path d="'+d+'" fill="none" stroke="var(--bad)" stroke-width="2" stroke-dasharray="6 4"/>';
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%">'+g+'</svg>';
+}
+
+/* ════════ 화면 ════════ */
+function render(){
+  var hb = document.getElementById('hideBtn'); if(hb){ hb.textContent = HIDE ? '🙈' : '👁'; hb.title = HIDE ? '금액 보이기' : '금액 숨기기'; }
+  document.getElementById('nav').innerHTML = TABS.map(function(t){
+    return '<button class="'+(t.id===TAB?'on':'')+'" onclick="go(\''+t.id+'\')"><span class="ic">'+t.ic+'</span>'+t.name+'</button>';
+  }).join('');
+  var v = document.getElementById('view');
+  v.innerHTML = '<div class="grid g-'+TAB+'">' + ({dash:viewDash, assets:viewAssets, alloc:viewAlloc, money:viewMoney, flow:viewFlow, sim:viewSim, todo:viewTodo}[TAB] || viewDash)() + '</div>';
+  pcLayout(v);
+  var tb = TABS.find(function(t){ return t.id === TAB; }), h1 = document.querySelector('header h1');
+  if(h1) h1.textContent = isPC() && tb ? tb.name : '라이프플랜';
+}
+function isPC(){ return window.innerWidth >= 1024; }
+// PC: 요약 타일·명의 칩·안내는 위, .R 카드는 오른쪽 열, 나머지는 왼쪽 열에 위아래로 쌓음
+function pcLayout(v){
+  if(!isPC() || TAB === 'sim' || TAB === 'todo') return;
+  var box = v.firstChild, kids = [].slice.call(box.children);
+  var lay = document.createElement('div'), L = document.createElement('div'), R = document.createElement('div');
+  lay.className = 'lay'; L.className = 'colL'; R.className = 'colR';
+  kids.forEach(function(el){
+    var c = el.classList;
+    if(c.contains('R')) R.appendChild(el);
+    else if(c.contains('kpis') || c.contains('chips') || c.contains('alert') || c.contains('top')) box.insertBefore(el, null);
+    else L.appendChild(el);
+  });
+  lay.appendChild(L); lay.appendChild(R); box.appendChild(lay);
+}
+function kpis(arr){
+  return '<div class="kpis pc">'+arr.map(function(k){ return '<div class="kpi"><div class="k">'+k[0]+'</div><div class="v num '+(k[2]||'')+'">'+k[1]+'</div>'+(k[3]?'<div class="tiny">'+k[3]+'</div>':'')+'</div>'; }).join('')+'</div>';
+}
+function ownerChips(){
+  var opts = [''].concat(S.members.map(function(m){ return m.name; }), ['공동']);
+  if(OWNER && opts.indexOf(OWNER) < 0){ OWNER = ''; try{ localStorage.setItem('lp_owner', ''); }catch(e){} }
+  return '<div class="chips">' + opts.map(function(o){ return '<button class="chip '+(o===OWNER?'on':'')+'" onclick="setOwner(\''+esc(o)+'\')">'+(o?esc(nm(o)):'전체')+'</button>'; }).join('') + '</div>';
+}
+function setOwner(o){ OWNER = o; localStorage.setItem('lp_owner', o); render(); }
+function toggleHide(){ HIDE = !HIDE; localStorage.setItem('lp_hide', HIDE ? '1' : '0'); render(); }
+// 이번 달 소득: 급여 장부에 이번 달 금액이 있으면 그 값(+ 이번 달 수당), 없으면 근로소득 항목 + 그 밖의 소득 항목
+function monthIncome(i){
+  var srcs = {};
+  S.incomes.forEach(function(x){ if(isSalary(x) && expActiveInc(x, i)){ var l = ledgerMonthly(x.owner, i); srcs[l ? l.src : 'item'] = 1; } });
+  var src = srcs.actual ? '급여 장부 (이번 달 입력)' : srcs.avg ? '부부 월 급여 합산' : '소득 항목 기준';
+  return {v: incomeAt(i), src: src};
+}
+// 순자산 카드: 자산군별 금액을 그 색 글자로 (도표 없이)
+function assetText(t){
+  var cats = Object.keys(CATS).filter(function(c){ return t.byCat[c] > 0; });
+  if(!cats.length) return '';
+  return '<div style="display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:12px;font-size:var(--f-sm)">'+
+    cats.map(function(c){ return '<span style="white-space:nowrap;color:'+CAT_COLOR[c]+'">'+CATS[c]+' <b class="num" style="font-weight:500">'+fm(t.byCat[c])+'</b></span>'; }).join('')+
+    (t.debts > 0 ? '<span class="neg" style="white-space:nowrap">부채 <b class="num" style="font-weight:500">−'+fm(t.debts)+'</b></span>' : '')+'</div>';
+}
+/* ── 지난 목돈 알림: 날짜가 된 목돈을 자산에 반영·미루기·완료 처리 ── */
+function dueLumps(){
+  var now = nowIdx(), out = [];
+  S.lumps.forEach(function(l){
+    var s = ymIdx(l.month); if(s == null) return;
+    if(!l.repeat){ if(!l.done && s <= now) out.push({l:l, i:s}); return; }
+    var e = ymIdx(l.until), i = s, last = null;                       // 반복: 확인 안 한 가장 최근 회차
+    while(i <= now && (e == null || i <= e)){ if(l.ack == null || i > l.ack) last = i; i += 12; }
+    if(last != null) out.push({l:l, i:last});
+  });
+  return out.sort(function(a,b){ return a.i - b.i; });
+}
+function dueLumpsCard(){
+  var d = dueLumps(); if(!d.length) return '';
+  return '<div class="card wide" style="border-color:var(--warn)"><h2><span class="wrn">●</span> 날짜가 된 목돈 '+d.length+'건</h2>'+
+    d.map(function(x){ var a = num(x.l.amount);
+      return '<div style="padding:10px 0;border-top:1px solid var(--bd)"><div style="display:flex;gap:8px"><div class="m" style="flex:1"><div class="t">'+esc(x.l.name)+'</div><div class="tiny">'+ymDot(idxYm(x.i))+' · '+(a>=0?'받으셨나요?':'쓰셨나요?')+'</div></div><div class="v num '+(a<0?'neg':'pos')+'">'+(a>=0?'+':'')+fm(a)+'</div></div>'+
+        '<div class="btns" style="margin-top:8px"><button class="btn sm" onclick="dueApply(\''+x.l.id+'\','+x.i+')">자산에 반영</button><button class="btn sub sm" onclick="dueDelay(\''+x.l.id+'\','+x.i+')">날짜 미루기</button><button class="btn sub sm" onclick="dueDone(\''+x.l.id+'\','+x.i+')">반영 안 함</button></div></div>'; }).join('')+
+    '<div class="tiny" style="margin-top:6px">반영해야 순자산과 시뮬레이션이 맞습니다. 지난 목돈은 시뮬레이션에서 빠지기 때문입니다.</div></div>';
+}
+function markLump(l, i, note){
+  if(l.repeat) l.ack = i; else { l.done = true; l.doneNote = note || ''; }
+}
+function dueApply(id, i){
+  var l = S.lumps.find(function(x){ return x.id === id; }), a = num(l.amount);
+  var opts = S.assets.filter(function(x){ return FIN_CATS.indexOf(x.cat) >= 0; }).map(function(x){ return '<option value="'+x.id+'">'+esc(assetLabel(x))+' · '+fm(num(x.value))+'</option>'; }).join('');
+  openModal('<h3>'+esc(l.name)+' 반영</h3>'+
+    '<label class="f">'+(a>=0?'넣은 자산':'빠져나간 자산')+'<select id="f_to">'+opts+'<option value="new">+ 새 현금·예금 자산</option></select></label>'+
+    '<label class="f">실제 금액 (만원, '+(a>=0?'받은':'쓴')+' 금액)<input id="f_amt" type="number" inputmode="decimal" value="'+Math.abs(a)+'"></label>'+
+    '<div class="tiny" style="margin-bottom:10px">자산 금액에 '+(a>=0?'더하고':'빼고')+' 이 목돈은 완료로 표시합니다.</div>'+
+    '<div class="btns"><button class="btn" onclick="dueApplySave(\''+id+'\','+i+')">반영</button><button class="btn sub" onclick="closeModal()">취소</button></div>');
+}
+function dueApplySave(id, i){
+  var l = S.lumps.find(function(x){ return x.id === id; }), sign = num(l.amount) >= 0 ? 1 : -1, amt = Math.abs(num(fv('f_amt'))) * sign, to = fv('f_to'), asset;
+  if(to === 'new'){ asset = {id:uid(), name:l.name, cat:'cash', owner:'', value:0, note:'', bucket:'reserve'}; S.assets.push(asset); }
+  else asset = S.assets.find(function(x){ return x.id === to; });
+  var old = num(asset.value); asset.value = Math.round((old + amt)*100)/100;
+  markLump(l, i, asset.name+'에 반영');
+  closeModal(); commit(); toast(asset.name+' '+fm(old)+' → '+fm(asset.value));
+}
+function dueDelay(id, i){
+  var l = S.lumps.find(function(x){ return x.id === id; });
+  openModal('<h3>'+esc(l.name)+' 날짜 미루기</h3>'+monthField('f_nm', '새 예정 월', idxYm(Math.max(i, nowIdx()) + 1))+
+    '<div class="btns"><button class="btn" onclick="dueDelaySave(\''+id+'\')">저장</button><button class="btn sub" onclick="closeModal()">취소</button></div>');
+}
+function dueDelaySave(id){
+  var l = S.lumps.find(function(x){ return x.id === id; }), v = fv('f_nm'); if(!v) return;
+  if(l.repeat){ alert('반복 목돈은 이번 회차만 미룰 수 없습니다. [반영 안 함]을 누른 뒤 따로 목돈을 추가하세요.'); return; }
+  l.month = v; closeModal(); commit(); toast(l.name+' → '+ymDot(v));
+}
+function dueDone(id, i){
+  var l = S.lumps.find(function(x){ return x.id === id; });
+  if(!confirm(l.name+'을(를) 자산 변동 없이 완료로 표시할까요?')) return;
+  markLump(l, i, '반영 안 함'); commit();
+}
+// 탭 이동을 브라우저 기록에 남겨 휴대폰 뒤로가기로 이전 탭에 돌아오게 함
+function go(t, fromPop){
+  if(!fromPop && t !== TAB) history.pushState({tab:t}, '', '#'+t);
+  TAB = t; localStorage.setItem('lp_tab', t); render(); window.scrollTo(0,0);
+}
+
+function viewDash(){
+  var t = totals();
+  var parts = Object.keys(CATS).filter(function(c){ return t.byCat[c] > 0; }).map(function(c){ return {n:CATS[c], v:t.byCat[c], c:CAT_COLOR[c]}; });
+  var keys = Object.keys(SNAPS).sort();
+  var pts = keys.map(function(k){ return {x:k.slice(2).replace('-','.'), y:num(SNAPS[k].net_worth)}; });
+  var mi = monthIncome(nowIdx()), inc = mi.v;
+  var cm = thisMonth(), saved = !!SNAPS[cm];
+  var h = ownerChips();
+  // 전월 대비: 이번 달 이전의 가장 최근 기록과 비교 (가계 전체 기준)
+  var prevK = keys.filter(function(k){ return k < cm; }).pop(), delta = '';
+  if(!OWNER && prevK){
+    var pv = num(SNAPS[prevK].net_worth), d = t.net - pv, pct = pv ? d/Math.abs(pv)*100 : 0;
+    delta = '<div class="'+(d>=0?'pos':'neg')+'" style="font-size:var(--f-sm);margin-top:2px">'+ymDot(prevK)+' 대비 '+(d>=0?'+':'')+fm(d)+(HIDE?'':' ('+(d>=0?'+':'')+pct.toFixed(1)+'%)')+'</div>';
+  } else if(OWNER){
+    delta = '<div class="tiny" style="margin-top:2px">'+esc(OWNER)+' 명의만 · 추이와 기록은 가계 전체 기준</div>';
+  }
+  h += backupNote();
+  h += kpis([['순자산', fm(t.net), '', delta ? delta.replace(/<[^>]+>/g,'') : ''], ['총자산', fm(t.assets), 'pos'], ['부채', '−'+fm(t.debts), 'neg'], ['금융자산', fm(t.fin)], ['이번 달 소득', fm(inc), '', mi.src]]);
+  h += dueLumpsCard();
+  if(!S.assets.length) h += '<div class="alert">아직 장부가 비어 있습니다. <button class="btn sm" onclick="startWizard()">설정 마법사 시작</button> 또는 <b>자산</b> 탭에서 직접 입력하세요. 백업 파일이 있으면 ⚙ 설정에서 불러오세요.</div>';
+  h += '<div class="card mob"><div class="muted">순자산</div><div class="big num">'+fm(t.net)+(HIDE?'':'원')+'</div>'+delta+
+    '<div class="grid2" style="margin-top:12px">'+
+    '<div class="kv"><div class="k">총자산</div><div class="v pos">'+fm(t.assets)+'</div></div>'+
+    '<div class="kv"><div class="k">부채</div><div class="v neg">−'+fm(t.debts)+'</div></div>'+
+    '<div class="kv"><div class="k">금융자산</div><div class="v">'+fm(t.fin)+'</div></div>'+
+    '<div class="kv"><div class="k">이번 달 소득</div><div class="v">'+fm(inc)+'</div><div class="tiny">'+mi.src+'</div></div>'+
+    '</div>'+assetText(t)+'</div>';
+  h += '<div class="card"><h2>자산 비중</h2>'+donut(parts, true)+'</div>';
+  // PC 오른쪽: 다가오는 목돈
+  var now0 = nowIdx(), up = S.lumps.filter(function(l){ return !l.done; }).map(function(l){ return {l:l, i:lumpNext(l, now0)}; })
+    .filter(function(o){ return o.i != null && o.i >= now0; }).sort(function(a,b){ return a.i-b.i; }).slice(0, 6);
+  var ex0 = expenseAt(now0), dc0 = debtCostAt(now0), cap0 = inc - ex0 - dc0;
+  h += '<div class="card pc"><h2>이번 달 현금흐름</h2><table>'+
+    '<tr><td>소득</td><td>'+fm(inc)+'</td></tr><tr><td>월 고정지출</td><td class="neg">−'+fm(ex0)+'</td></tr>'+
+    (dc0 ? '<tr><td>대출 이자·상환</td><td class="neg">−'+fm(dc0)+'</td></tr>' : '')+
+    '<tr><th style="text-align:left">남는 돈</th><th class="'+(cap0<0?'neg':'pos')+'">'+fm(cap0)+'</th></tr></table>'+
+    '<div class="btns"><button class="btn sub sm" onclick="go(\'money\')">수입지출 보기</button></div></div>';
+  h += '<div class="card pc R"><h2>다가오는 목돈<span class="sp"></span><button class="btn sub sm" onclick="go(\'flow\')">전체</button></h2>'+
+    (up.length ? up.map(function(o){ var a = num(o.l.amount); return '<div class="row" onclick="editLump(\''+o.l.id+'\')"><div class="m"><div class="t">'+esc(o.l.name)+'</div><div class="tiny">'+ymDot(idxYm(o.i))+'</div></div><div class="v '+(a<0?'neg':'pos')+'">'+(a>=0?'+':'')+fm(a)+'</div></div>'; }).join('') : '<div class="empty">예정된 목돈이 없습니다</div>')+'</div>';
+  h += '<div class="card R"><h2>순자산 추이<span class="sp"></span><button class="btn sm '+(saved?'sub':'')+'" onclick="saveSnapshot()">'+(saved?'이번 달 다시 기록':'이번 달 기록')+'</button></h2>'+
+    lineChart(pts, {zero:false, empty:'매달 한 번 [이번 달 기록]을 누르면 추이가 쌓입니다'})+
+    (keys.length ? '<div class="tiny" style="margin-top:6px">기록 '+keys.length+'개 · 최근 '+ymDot(keys[keys.length-1])+'</div>' : '')+'</div>';
+  return h;
+}
+
+function viewAssets(){
+  var t = totals(), h = ownerChips();
+  h += kpis(Object.keys(CATS).filter(function(c){ return t.byCat[c] > 0; }).map(function(c){ return [CATS[c], fm(t.byCat[c]), '', t.assets ? Math.round(t.byCat[c]/t.assets*100)+'%' : '']; }).concat([['부채', '−'+fm(t.debts), 'neg']]));
+  h += '<div class="card"><h2>자산<span class="sp"></span><button class="btn sm" onclick="editAsset()">+ 추가</button></h2>';
+  if(!byOwner(S.assets).length) h += '<div class="empty">'+(OWNER?'이 명의의 자산이 없습니다':'아직 자산이 없습니다')+'</div>';
+  Object.keys(CATS).forEach(function(c){
+    var list = byOwner(S.assets).filter(function(a){ return a.cat === c; });
+    if(!list.length) return;
+    h += '<div class="grp big"><span>'+CATS[c]+'</span><span class="num">'+fm(t.byCat[c])+'</span></div>';
+    list.forEach(function(a){
+      h += '<div class="row" onclick="editAsset(\''+a.id+'\')"><div class="m"><div class="t">'+esc(a.name)+
+        (a.owner ? '<span class="tag">'+esc(nm(a.owner))+'</span>' : '')+(a.bucket ? '<span class="tag">'+BUCKETS[a.bucket].slice(0,1)+'</span>' : '')+(isRbAsset(a.id) ? '<span class="tag">리밸런서</span>' : '')+'</div>'+
+        (a.note || a.src ? '<div class="tiny">'+esc([a.note, a.src].filter(Boolean).join(' · '))+'</div>' : '')+'</div><div class="v">'+fm(num(a.value))+(t.assets?'<span class="tiny pcI" style="display:inline-block;width:44px;text-align:right">'+Math.round(num(a.value)/t.assets*100)+'%</span>':'')+'</div></div>';
+    });
+  });
+  h += '</div>';
+  h += '<div class="card R" style="background:var(--debt-bg);border-color:var(--debt-bd)"><h2>부채<span class="sp"></span><button class="btn sm" onclick="editDebt()">+ 추가</button></h2>';
+  if(!byOwner(S.debts).length) h += '<div class="empty">전세보증금·대출 등을 기록합니다</div>';
+  byOwner(S.debts).forEach(function(d){
+    var di = [];
+    if(num(d.rate) > 0) di.push('연 '+num(d.rate)+'% · 월 이자 '+fm(num(d.value)*num(d.rate)/1200));
+    if(num(d.pay) > 0) di.push('월 상환 '+fm(num(d.pay)));
+    if(d.end) di.push('~'+ymDot(d.end));
+    if(d.note) di.push(esc(d.note));
+    h += '<div class="row" onclick="editDebt(\''+d.id+'\')"><div class="m"><div class="t">'+esc(d.name)+'</div>'+(di.length?'<div class="tiny">'+di.join(' · ')+'</div>':'')+'</div><div class="v neg">−'+fm(num(d.value))+'</div></div>';
+  });
+  var own = {}; byOwner(S.assets).forEach(function(a){ var k = a.owner || '공동'; own[k] = (own[k] || 0) + num(a.value); });
+  var ownRows = Object.keys(own).sort(function(a,b){ return own[b]-own[a]; }).map(function(k){ var pct = t.assets ? own[k]/t.assets*100 : 0;
+    return '<div style="margin-top:10px"><div style="display:flex;font-size:var(--f-sm)"><span>'+esc(nm(k))+'</span><span class="sp" style="flex:1"></span><span class="num">'+fm(own[k])+' <span class="tiny">'+Math.round(pct)+'%</span></span></div>'+
+      '<div style="height:6px;background:var(--s3);border-radius:99px;margin-top:4px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:var(--accent)"></div></div></div>'; }).join('');
+  h += '</div><div class="card R"><div class="grid2"><div class="kv"><div class="k">총자산</div><div class="v">'+fm(t.assets)+'</div></div><div class="kv"><div class="k">순자산</div><div class="v">'+fm(t.net)+'</div></div></div>'+
+    (ownRows ? '<h2 style="margin-top:14px">명의별 자산</h2>'+ownRows : '')+'<div class="tiny" style="margin-top:10px">금액 단위는 만원입니다</div></div>';
+  return h;
+}
+
+function viewFlow(){
+  var cur = nowIdx(), y0 = Math.floor(cur/12), y1 = num(S.sim.endYear), life = ymIdx(S.sim.lifeStart);
+  var bars = [];
+  for(var y = y0; y <= y1; y++){
+    var tot = 0; for(var m = 0; m < 12; m++) tot += incomeAt(y*12+m);
+    var sps = [], m2; for(m2 = 0; m2 < 12; m2++){ var s2 = spendAt(y*12+m2); if(s2 != null) sps.push(s2); }
+    var avg = tot/12, sp = sps.length ? sum(sps)/sps.length : null;
+    bars.push({x:String(y).slice(2), v:avg, line:sp, c: sp != null && avg < sp ? 'var(--warn)' : 'var(--c1)'});
+  }
+  var per0 = incomePeriods(), gaps = per0.filter(function(p){ return p.s != null; }).map(function(p){ return p.v - p.s; });
+  var worst = gaps.length ? Math.min.apply(null, gaps) : 0;
+  var h = kpis([['지금 월 소득', fm(incomeAt(cur))], ['은퇴 후 월 소득', life != null ? fm(incomeAt(life)) : '–', '', life != null ? ymDot(S.sim.lifeStart)+'부터' : ''], ['은퇴 후 월 생활비', life != null && spendAt(life) != null ? fm(spendAt(life)) : '–'], ['가장 모자란 구간', worst < 0 ? fm(worst) : '없음', worst < 0 ? 'neg' : 'pos', '월 기준']]);
+  h += viewTimeline() + '<div class="card"><h2>연도별 가계 월 소득</h2>'+barChart(bars)+
+    '<div class="legend"><span><i style="background:var(--c1)"></i>월 소득 ≥ 생활비</span><span><i style="background:var(--warn)"></i>생활비보다 부족</span><span><i style="background:var(--bad)"></i>월 생활비 (점선)</span></div></div>';
+  var per = incomePeriods();
+  // 모바일에서 줄바꿈되지 않게: 기간은 '26.11~32.12, 금액은 만원 단위 숫자만
+  var yy = function(i){ var s = idxYm(i); return s.slice(2,4)+'.'+s.slice(5); };
+  var nm = function(v){ return HIDE ? '••••' : Math.round(v).toLocaleString('ko-KR'); };
+  h += '<div class="card R"><h2>기간별 월 소득<span class="sp"></span><span class="tiny">단위 만원</span></h2><table><tr><th>기간</th><th>소득</th><th>생활비</th><th>차이</th></tr>';
+  per.forEach(function(p){
+    var after = p.s != null, gap = after ? p.v - p.s : 0;
+    h += '<tr'+(p.pre?' style="color:var(--t2)"':'')+'><td>'+yy(p.from)+'~'+(p.to >= num(S.sim.endYear)*12+11 ? '' : yy(p.to))+(p.pre?'*':'')+'</td><td>'+nm(p.v)+'</td><td>'+(after ? nm(p.s) : '–')+'</td><td class="'+(after ? (gap<0?'neg':'pos') : '')+'">'+(after ? (gap>=0?'+':'')+nm(gap) : '–')+'</td></tr>';
+  });
+  h += '</table><div class="tiny" style="margin-top:6px">* 생활비 시작('+ymDot(S.sim.lifeStart)+') 전 생활비는 월 고정지출 합계(참고용)입니다. 시뮬레이션은 이 기간에 \'그 전 월 저축액\'을 씁니다. 생활비에는 대출 이자·상환액이 포함됩니다'+(S.sim.spendMode==='expenses'?' · 수입지출 탭의 고정지출 목록 기준':'')+'</div></div>';
+  h += viewFamily();
+  h += '<div class="card R"><h2>월 소득 항목</h2>';
+  if(!S.incomes.length) h += '<div class="empty">연금·급여·월세처럼 매달 들어오는 돈</div>';
+  // 명의별로 나누고, 칸 안에서는 시작 순서 · 사이가 비면 '공백' 줄
+  var owners = S.members.map(function(m){ return m.name; }).concat(['공동']);
+  S.incomes.forEach(function(x){ var o = x.owner || '공동'; if(owners.indexOf(o) < 0) owners.push(o); });
+  owners.forEach(function(o){
+    var list = S.incomes.filter(function(x){ return (x.owner || '공동') === o; })
+      .sort(function(a,b){ return (ymIdx(a.start) || 0) - (ymIdx(b.start) || 0); });
+    if(!list.length && o === '공동') return;
+    h += '<div class="incg"><div class="incg-h"><b>'+esc(nm(o))+'</b><span class="sp" style="flex:1"></span><button class="btn sub sm" onclick="editIncome(\'\',\''+esc(o)+'\')">+ 추가</button></div>';
+    if(!list.length) h += '<div class="tiny" style="padding:4px 2px 8px">항목 없음</div>';
+    var prevEnd = null;
+    list.forEach(function(x){
+      var si = ymIdx(x.start), ei = incEnd(x);
+      if(prevEnd != null && si != null && si > prevEnd + 1)
+        h += '<div class="row gaprow"><div class="m"><div class="t wrn">공백</div><div class="tiny">'+ymDot(idxYm(prevEnd+1))+' ~ '+ymDot(idxYm(si-1))+' · '+Math.round((si-prevEnd-1)/12*10)/10+'년</div></div><div class="v wrn">0</div></div>';
+      if(ei == null) prevEnd = Infinity; else if(prevEnd == null || ei > prevEnd) prevEnd = ei;
+      var cur = incomeItemAt(x, Math.max(nowIdx(), si || 0));
+      h += '<div class="row" onclick="editIncome(\''+x.id+'\')"><div class="m"><div class="t">'+esc(x.name)+(isSalary(x)?'<span class="tag">급여 장부</span>':'')+'</div><div class="tiny">'+(x.start?ymDot(x.start):'지금')+' ~ '+(ei!=null?ymDot(idxYm(ei))+(!x.end?' (퇴직 월)':''):'계속')+'</div></div><div class="v">월 '+fm(cur)+'</div></div>';
+    });
+    h += '</div>';
+  });
+  h += '</div><div class="card"><h2>목돈 일정<span class="sp"></span><button class="btn sm" onclick="editLump()">+ 추가</button></h2>';
+  if(!S.lumps.length) h += '<div class="empty">퇴직수당·적금 만기·교육비 같은 일회성 입출금</div>';
+  S.lumps.slice().sort(function(a,b){ return (a.month||'').localeCompare(b.month||''); }).forEach(function(x){
+    var a = num(x.amount);
+    h += '<div class="row" onclick="editLump(\''+x.id+'\')" style="'+(x.done?'opacity:.5':'')+'"><div class="m"><div class="t">'+esc(x.name)+(x.done?'<span class="tag">완료'+(x.doneNote?' · '+esc(x.doneNote):'')+'</span>':'')+'</div><div class="tiny">'+(x.repeat ? '매년 '+(+x.month.slice(5))+'월 · '+ymDot(x.month)+'~'+(x.until?ymDot(x.until):'') : ymDot(x.month))+agesAt(ymIdx(x.month))+(x.bucket?' · '+BUCKETS[x.bucket]:'')+(x.note?' · '+esc(x.note):'')+'</div></div><div class="v '+(a<0?'neg':'pos')+'">'+(a>=0?'+':'')+fm(a)+'</div></div>';
+  });
+  h += '</div>';
+  return h;
+}
+
+function viewSim(){
+  var s = S.sim, r = simulate();
+  var keyYears = [2033, 2041, 2046, num(s.endYear)].filter(function(y,i,a){ return a.indexOf(y) === i; });
+  var pts = r.years.map(function(y){ return {x:String(y.y).slice(2), y:y.bal}; });
+  var marks = [{x:String(Math.floor((ymIdx(s.lifeStart)||nowIdx())/12)).slice(2), t:'생활비 시작', c:'var(--warn)'}];
+  var h = '<div class="simL"><div class="card"><h2>가정</h2><div class="grid2">'+
+    simField('실질 수익률 (%/년)', 'rate', 'number', '0.5')+
+    simField('생활비 시작 (년-월)', 'lifeStart', 'month')+
+    simField('그 전 월 저축액 (만원)', 'saveBefore', 'number', '10')+
+    simField('기본 월 생활비 (만원)', 'spend', 'number', '10')+
+    simField('계산 종료 연도', 'endYear', 'number', '1')+
+    '</div><div class="tiny">물가를 뺀 실질 기준입니다. 부동산은 빼고 금융자산(주식·연금계좌·적금·현금)만 굴립니다. 생활비 시작 전에는 소득 항목 대신 월 저축액(대출 이자를 뺀 순저축)만 더하고, 시작 후에는 월 소득 − 월 생활비를 더하거나 뺍니다. 목돈 일정은 해당 월에 반영합니다.</div></div>';
+  var ph = sortedPhases();
+  h += '<div class="card"><h2>생활비 계산 방식</h2><div class="chips" style="margin:0">'+
+    '<button class="chip '+(s.spendMode!=='expenses'?'on':'')+'" onclick="setSim(\'spendMode\',\'manual\',\'month\')">직접 입력 (기본 + 구간)</button>'+
+    '<button class="chip '+(s.spendMode==='expenses'?'on':'')+'" onclick="setSim(\'spendMode\',\'expenses\',\'month\')">고정지출 목록</button></div>'+
+    (s.spendMode==='expenses' ? '<div class="tiny" style="margin-top:8px">수입지출 탭의 고정지출(종료 시점 반영) 합계를 월 생활비로 씁니다. 지금 '+fm(expenseAt(nowIdx()))+' → 생활비 시작 시 '+fm(expenseAt(ymIdx(s.lifeStart)||nowIdx()))+'</div>' : '')+'</div>';
+  if(s.spendMode !== 'expenses') h += '<div class="card"><h2>기간별 생활비<span class="sp"></span><button class="btn sm" onclick="editPhase()">+ 구간</button></h2>'+
+    '<div class="row" style="cursor:default"><div class="m"><div class="t">'+ymDot(s.lifeStart)+'부터</div><div class="tiny">기본 월 생활비</div></div><div class="v">월 '+fm(num(s.spend))+'</div></div>'+
+    ph.map(function(p){ return '<div class="row" onclick="editPhase(\''+p.id+'\')"><div class="m"><div class="t">'+ymDot(p.from)+'부터</div>'+(p.note?'<div class="tiny">'+esc(p.note)+'</div>':'')+'</div><div class="v">월 '+fm(num(p.monthly))+'</div></div>'; }).join('')+
+    '<div class="tiny" style="margin-top:6px">구간은 시작 월부터 다음 구간 전까지 적용됩니다. 예: 2033.01 800 → 2035.01 600 → 2046.01 550</div></div>';
+  if(S.debts.some(function(d){ return num(d.rate) > 0 || num(d.pay) > 0; })) h += '<div class="tiny" style="margin:-4px 2px 12px">대출 이자·상환액은 생활비와 별도로 매달 빠집니다 (지금 월 '+fm(debtCostAt(nowIdx()))+')</div>';
+  h += '</div><div class="simR">';
+  if(r.firstNeg != null) h += '<div class="alert"><b class="neg">'+ymDot(idxYm(r.firstNeg))+'</b>에 금융자산이 바닥납니다. 생활비를 줄이거나 저축을 늘려 보세요.</div>';
+  h += '<div class="card"><h2>예상 금융자산</h2><div class="grid2">'+
+    '<div class="kv"><div class="k">지금</div><div class="v">'+fm(r.start)+'</div></div>'+
+    keyYears.map(function(y){ var row = r.years.find(function(x){ return x.y === y; }); return row ? '<div class="kv"><div class="k">'+y+'년 말</div><div class="v">'+fm(row.bal)+'</div></div>' : ''; }).join('')+
+    '<div class="kv"><div class="k">최저점</div><div class="v '+(r.minV<0?'neg':'')+'">'+fm(r.minV)+' <span class="tiny">'+ymDot(idxYm(r.minI))+'</span></div></div>'+
+    '</div><div style="margin-top:12px">'+lineChart(pts, {marks:marks})+'</div></div>';
+  h += '<div class="card"><h2>연도별</h2><table><tr><th>연도</th><th>연간 순현금</th><th>연말 금융자산</th></tr>'+
+    r.years.map(function(y){ return '<tr><td>'+y.y+'</td><td class="'+(y.net<0?'neg':'')+'">'+(y.net>=0?'+':'')+fm(y.net)+'</td><td>'+fm(y.bal)+'</td></tr>'; }).join('')+'</table></div>';
+  h += '</div>';
+  return h;
+}
+function simField(label, k, type, step){
+  var v = S.sim[k];
+  return '<label class="f">'+label+'<input type="'+(type==='month'?'month':'number')+'" '+(step?'step="'+step+'" ':'')+'inputmode="decimal" value="'+esc(v)+'" onchange="setSim(\''+k+'\', this.value, \''+type+'\')"></label>';
+}
+function editPhase(id){
+  var p = (S.sim.phases || []).find(function(x){ return x.id === id; }) || {};
+  openModal('<h3>'+(id?'생활비 구간 수정':'생활비 구간 추가')+'</h3>'+
+    '<label class="f">시작 (년-월)<input id="f_from" type="month" value="'+esc(p.from)+'"></label>'+
+    '<label class="f">월 생활비 (만원, 현재 가치)<input id="f_monthly" type="number" inputmode="decimal" value="'+esc(p.monthly)+'"></label>'+
+    '<label class="f">메모<input id="f_note" value="'+esc(p.note)+'" placeholder="예: 자녀 대학 재학"></label>'+
+    '<div class="btns"><button class="btn" onclick="savePhase(\''+(id||'')+'\')">저장</button><button class="btn sub" onclick="closeModal()">취소</button>'+
+    (id?'<span style="flex:1"></span><button class="btn bad" onclick="delPhase(\''+id+'\')">삭제</button>':'')+'</div>');
+}
+function savePhase(id){
+  var o = {from:fv('f_from'), monthly:num(fv('f_monthly')), note:fv('f_note').trim()};
+  if(!o.from){ alert('시작 월을 입력하세요'); return; }
+  S.sim.phases = S.sim.phases || [];
+  if(id){ Object.assign(S.sim.phases.find(function(x){ return x.id === id; }), o); } else { o.id = uid(); S.sim.phases.push(o); }
+  closeModal(); commit();
+}
+function delPhase(id){ if(!confirm('삭제할까요?')) return; S.sim.phases = S.sim.phases.filter(function(x){ return x.id !== id; }); closeModal(); commit(); }
+function setSim(k, v, type){ S.sim[k] = type === 'month' ? v : num(v); commit(); }
+
+function viewTodo(){
+  var h = '<div class="card"><h2>확인할 일<span class="sp"></span><span class="tiny">'+S.checklist.filter(function(c){ return c.done; }).length+' / '+S.checklist.length+'</span></h2>';
+  if(!S.checklist.length) h += '<div class="empty">할 일을 추가하세요</div>';
+  S.checklist.forEach(function(c){
+    h += '<div class="chk-item '+(c.done?'done':'')+'"><input type="checkbox" '+(c.done?'checked':'')+' onchange="toggleTodo(\''+c.id+'\')"><div class="tx">'+esc(c.text)+'</div><button class="x" onclick="delTodo(\''+c.id+'\')" aria-label="삭제">×</button></div>';
+  });
+  h += '<div class="btns" style="flex-wrap:nowrap"><input id="newTodo" placeholder="새 할 일" style="flex:1;padding:10px;border-radius:10px;border:1px solid var(--bd);background:var(--s2)" onkeydown="if(event.key===\'Enter\')addTodo()"><button class="btn" onclick="addTodo()">추가</button></div></div>';
+  return h;
+}
+function toggleTodo(id){ var c = S.checklist.find(function(x){ return x.id === id; }); if(c){ c.done = !c.done; commit(); } }
+function delTodo(id){ if(!confirm('삭제할까요?')) return; S.checklist = S.checklist.filter(function(x){ return x.id !== id; }); commit(); }
+function addTodo(){ var el = document.getElementById('newTodo'); var t = el.value.trim(); if(!t) return; S.checklist.push({id:uid(), text:t, done:false}); commit(); }
+
+/* ════════ 편집 시트 ════════ */
+// 시트가 열려 있으면 뒤로가기는 시트만 닫음
+var _modalPushed = false, _ignorePop = false;
+function modalOpen(){ return document.getElementById('modal').classList.contains('on'); }
+function openModal(html){
+  document.getElementById('sheet').innerHTML = html;
+  if(!modalOpen() && !_modalPushed){ history.pushState({tab:TAB, modal:1}, '', location.hash); _modalPushed = true; }
+  document.getElementById('modal').classList.add('on');
+}
+function closeModal(fromPop){
+  if(!modalOpen()) return;
+  document.getElementById('modal').classList.remove('on');
+  if(_modalPushed){ _modalPushed = false; if(!fromPop){ _ignorePop = true; history.back(); } }
+}
+// PC 단축키: 1~7 탭 이동, Esc 창 닫기 / 창 크기 바뀌면 다시 그림
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape' && modalOpen()){ closeModal(); return; }
+  var tag = (e.target.tagName || '').toLowerCase();
+  if(modalOpen() || tag === 'input' || tag === 'select' || tag === 'textarea' || e.ctrlKey || e.metaKey || e.altKey) return;
+  var n = parseInt(e.key, 10); if(n >= 1 && n <= TABS.length) go(TABS[n-1].id);
+});
+var _rsz = null, _lastW = window.innerWidth;
+window.addEventListener('resize', function(){ clearTimeout(_rsz); _rsz = setTimeout(function(){ if(Math.abs(window.innerWidth - _lastW) > 40){ _lastW = window.innerWidth; render(); } }, 200); });
+window.addEventListener('popstate', function(e){
+  if(_ignorePop){ _ignorePop = false; return; }
+  if(modalOpen()){ _modalPushed = false; closeModal(true); return; }
+  var t = (e.state && e.state.tab) || 'dash';
+  if(t !== TAB) go(t, true);
+});
+function ownerOptions(sel){
+  var names = S.members.map(function(m){ return m.name; }).concat(['공동']);
+  return '<option value="">-</option>' + names.map(function(n){ return '<option value="'+esc(n)+'" '+(n===sel?'selected':'')+'>'+esc(n === '공동' ? n : nm(n))+'</option>'; }).join('');
+}
+function fv(id){ return document.getElementById(id).value; }
+
+function editAsset(id){
+  var a = S.assets.find(function(x){ return x.id === id; }) || {cat:'stock'};
+  openModal('<h3>'+(id?'자산 수정':'자산 추가')+'</h3>'+
+    '<label class="f">이름<input id="f_name" value="'+esc(a.name)+'" placeholder="예: 거주 아파트"></label>'+
+    '<label class="f">분류<select id="f_cat" onchange="document.getElementById(\'reBox\').style.display=this.value===\'realestate\'?\'block\':\'none\'">'+Object.keys(CATS).map(function(c){ return '<option value="'+c+'" '+(c===a.cat?'selected':'')+'>'+CATS[c]+'</option>'; }).join('')+'</select></label>'+
+    '<label class="f">명의<select id="f_owner">'+ownerOptions(a.owner)+'</select></label>'+
+    '<label class="f">평가액 (만원)<input id="f_value" type="number" inputmode="decimal" value="'+esc(a.value)+'"></label>'+
+    (a.src ? '<div class="tiny" style="margin:-4px 0 10px">'+esc(a.src)+(a.srcDetail?' · '+esc(a.srcDetail):'')+'</div>' : '')+
+    '<label class="f">메모<input id="f_note" value="'+esc(a.note)+'"></label>'+
+    '<label class="f">목적별 예산<select id="f_bucket">'+bucketOptions(id ? a.bucket : null)+'</select></label>'+
+    '<div id="reBox" style="display:'+(a.cat==='realestate'?'block':'none')+'"><div class="card" style="background:var(--s2)"><h2>시세 (아파트)</h2>'+
+      '<label class="f">시세 확인 주소 (선택 · KB부동산·네이버 부동산 등)<input id="f_kb" type="url" value="'+esc(a.kbUrl)+'" placeholder="https://..."></label>'+
+      '<div class="tiny">실거래가는 <a href="https://rt.molit.go.kr" target="_blank" rel="noopener" style="color:var(--accent)">국토부 실거래가 공개시스템</a>에서 확인해 위 금액에 넣으세요</div>'+
+      (a.kbUrl ? '<div class="btns"><button class="btn sub sm" onclick="window.open(\''+esc(a.kbUrl)+'\',\'_blank\')">시세 열기</button></div>' : '')+
+    '</div></div>'+
+    (id && isRbAsset(id) ? '<div class="tiny" style="margin-bottom:10px">리밸런서 계좌와 연결됨 — 평가액은 불러오기로 갱신</div>' : '')+
+    '<div class="btns"><button class="btn" onclick="saveAsset(\''+(id||'')+'\')">저장</button><button class="btn sub" onclick="closeModal()">취소</button>'+
+    (id?'<span style="flex:1"></span><button class="btn bad" onclick="delItem(\'assets\',\''+id+'\')">삭제</button>':'')+'</div>');
+}
+function saveAsset(id, thenTrade){
+  var o = {name:fv('f_name').trim()||'이름 없음', cat:fv('f_cat'), owner:fv('f_owner'), value:num(fv('f_value')), note:fv('f_note').trim(), bucket:fv('f_bucket')};
+  if(o.bucket === 'auto') o.bucket = defaultBucket(o.cat);
+  if(o.cat === 'realestate'){ o.kbUrl = fv('f_kb').trim(); }
+  if(thenTrade){ var it = S.assets.find(function(x){ return x.id === id; }); Object.assign(it, o); localStorage.setItem(LS_DATA, JSON.stringify(S)); META.dirty = true; saveMeta(); cloudSchedule(); render(); fetchTrades(id); return; }
+  upsertItem('assets', id, o);
+}
+function editDebt(id){
+  var d = S.debts.find(function(x){ return x.id === id; }) || {};
+  openModal('<h3>'+(id?'부채 수정':'부채 추가')+'</h3>'+
+    '<label class="f">이름<input id="f_name" value="'+esc(d.name)+'" placeholder="예: 전세보증금"></label>'+
+    '<label class="f">명의<select id="f_owner">'+ownerOptions(d.owner)+'</select></label>'+
+    '<label class="f">금액 (만원)<input id="f_value" type="number" inputmode="decimal" value="'+esc(d.value)+'"></label>'+
+    '<div class="grid2"><label class="f">연 금리 % (이자 있는 대출)<input id="f_rate" type="number" step="0.01" inputmode="decimal" value="'+esc(d.rate)+'" placeholder="예: 5.33"></label>'+
+    '<label class="f">월 상환액 (만원, 선택)<input id="f_pay" type="number" inputmode="decimal" value="'+esc(d.pay)+'" placeholder="비우면 이자만"></label></div>'+
+    '<div class="grid2"><label class="f">시작 (비우면 지금)<input id="f_start" type="month" value="'+esc(d.start)+'"></label>'+
+    '<label class="f">상환 끝 (선택)<input id="f_end" type="month" value="'+esc(d.end)+'"></label></div>'+
+    '<div class="tiny" style="margin:-4px 0 10px">금리를 넣으면 월 이자(또는 월 상환액)가 현금흐름·시뮬레이션의 지출로 들어갑니다. 전세보증금처럼 이자 없는 부채는 비워 두세요.</div>'+
+    '<label class="f">메모<input id="f_note" value="'+esc(d.note)+'"></label>'+
+    '<div class="btns"><button class="btn" onclick="upsertItem(\'debts\',\''+(id||'')+'\',{name:fv(\'f_name\').trim()||\'부채\',owner:fv(\'f_owner\'),value:num(fv(\'f_value\')),rate:fv(\'f_rate\'),pay:fv(\'f_pay\'),start:fv(\'f_start\'),end:fv(\'f_end\'),note:fv(\'f_note\').trim()})">저장</button><button class="btn sub" onclick="closeModal()">취소</button>'+
+    (id?'<span style="flex:1"></span><button class="btn bad" onclick="delItem(\'debts\',\''+id+'\')">삭제</button>':'')+'</div>');
+}
+function editIncome(id, owner){
+  var x = S.incomes.find(function(i){ return i.id === id; }) || (owner ? {owner:owner} : {});
+  openModal('<h3>'+(id?'월 소득 수정':'월 소득 추가')+'</h3>'+
+    '<label class="f">이름<input id="f_name" value="'+esc(x.name)+'" placeholder="예: 공무원연금"></label>'+
+    '<label class="f">누구<select id="f_owner">'+ownerOptions(x.owner)+'</select></label>'+
+    '<label class="chk"><input type="checkbox" id="f_sal" '+(isSalary(x)?'checked':'')+'> 수입지출 탭 급여 장부와 연동 (근로소득)</label>'+
+    '<label class="f">월 금액 (만원, 세후'+(isSalary(x)?' · 급여 장부가 비어 있을 때만 사용':'')+')<input id="f_monthly" type="number" inputmode="decimal" value="'+esc(x.monthly)+'"></label>'+
+    '<div class="grid2"><label class="f">시작 (비우면 지금)<input id="f_start" type="month" value="'+esc(x.start)+'"></label>'+
+    '<label class="f">끝 (비우면 계속)<input id="f_end" type="month" value="'+esc(x.end)+'"></label></div>'+
+    (isSalary(x) ? '<div class="tiny" style="margin:-4px 0 10px">금액은 그달 급여 장부 입력값, 없으면 가장 최근 연도의 월 환산(수당 포함)을 씁니다</div>' : '')+
+    '<div class="btns"><button class="btn" onclick="upsertItem(\'incomes\',\''+(id||'')+'\',{name:fv(\'f_name\').trim()||\'소득\',owner:fv(\'f_owner\'),kind:document.getElementById(\'f_sal\').checked?\'salary\':\'\',monthly:num(fv(\'f_monthly\')),start:fv(\'f_start\'),end:fv(\'f_end\')})">저장</button><button class="btn sub" onclick="closeModal()">취소</button>'+
+    (id?'<span style="flex:1"></span><button class="btn bad" onclick="delItem(\'incomes\',\''+id+'\')">삭제</button>':'')+'</div>');
+}
+function editLump(id){
+  var x = S.lumps.find(function(i){ return i.id === id; }) || {};
+  openModal('<h3>'+(id?'목돈 수정':'목돈 추가')+'</h3>'+
+    '<label class="f">이름<input id="f_name" value="'+esc(x.name)+'" placeholder="예: 퇴직수당"></label>'+
+    '<label class="f">금액 (만원, 지출은 −)<input id="f_amount" type="number" inputmode="decimal" value="'+esc(x.amount)+'"></label>'+
+    '<label class="f">시기 (반복이면 첫 회)<input id="f_month" type="month" value="'+esc(x.month)+'"></label>'+
+    '<label class="chk"><input type="checkbox" id="f_repeat" '+(x.repeat?'checked':'')+' onchange="document.getElementById(\'repBox\').style.display=this.checked?\'block\':\'none\'"> 매년 같은 달에 반복</label>'+
+    '<div id="repBox" style="display:'+(x.repeat?'block':'none')+'"><label class="f">반복 끝 (비우면 계속)<input id="f_until" type="month" value="'+esc(x.until)+'"></label>'+
+    '<div class="tiny" style="margin:-4px 0 10px">은퇴 전 저축액에 이미 들어간 수당(명절휴가비 등)은 넣지 마세요. 두 번 계산됩니다.</div></div>'+
+    (x.done ? '<label class="chk"><input type="checkbox" id="f_done" checked> 완료 ('+esc(x.doneNote||'')+') — 끄면 다시 예정으로</label>' : '')+
+    '<label class="f">들어갈 목적별 예산 (예산 탭 예정액에 반영)<select id="f_bucket">'+bucketOptions(x.bucket || '', true)+'</select></label>'+
+    '<label class="f">메모<input id="f_note" value="'+esc(x.note)+'"></label>'+
+    '<div class="btns"><button class="btn" onclick="upsertItem(\'lumps\',\''+(id||'')+'\',{name:fv(\'f_name\').trim()||\'목돈\',amount:num(fv(\'f_amount\')),month:fv(\'f_month\'),repeat:document.getElementById(\'f_repeat\').checked,until:fv(\'f_until\'),bucket:fv(\'f_bucket\'),done:!!(document.getElementById(\'f_done\')||{}).checked,note:fv(\'f_note\').trim()})">저장</button><button class="btn sub" onclick="closeModal()">취소</button>'+
+    (id?'<span style="flex:1"></span><button class="btn bad" onclick="delItem(\'lumps\',\''+id+'\')">삭제</button>':'')+'</div>');
+}
+function upsertItem(list, id, o){
+  if(id){ var it = S[list].find(function(x){ return x.id === id; }); if(it) Object.assign(it, o); }
+  else { o.id = uid(); S[list].push(o); }
+  closeModal(); commit();
+}
+function delItem(list, id){ if(!confirm('삭제할까요?')) return; S[list] = S[list].filter(function(x){ return x.id !== id; }); closeModal(); commit(); }
+
+/* ════════ 설정 ════════ */
+function openSettings(){
+  var u = _user;
+  var dark = document.documentElement.dataset.theme !== 'light';
+  openModal('<h3>설정</h3>'+
+    '<div class="card"><h2>데이터 보관</h2><div class="muted">장부는 <b>이 기기의 브라우저</b>에만 저장됩니다. 서버로 보내지 않습니다.</div>'+
+      '<div class="tiny" style="margin-top:6px">마지막 백업: '+(META.lastBackup ? new Date(META.lastBackup).toLocaleDateString('ko-KR') : '없음')+' · 영구 저장: '+(META.persist ? '켜짐' : '요청 전')+'</div>'+
+      '<div class="btns"><button class="btn" onclick="exportData()">백업 파일 저장</button><button class="btn sub" onclick="document.getElementById(\'file\').click()">백업 불러오기 · 합치기</button></div>'+
+      '<div class="tiny" style="margin-top:8px">폰을 바꾸거나 브라우저 데이터를 지우면 장부가 사라집니다. 한 달에 한 번 백업 파일을 저장해 두세요. 배우자와는 백업 파일을 주고받아 \'합치기\'로 맞출 수 있습니다.</div></div>'+
+    '<div class="card"><h2>구성원</h2><div class="tiny" style="margin-bottom:8px">닉네임은 화면 표시용이라 언제 바꿔도 장부가 그대로입니다</div>'+
+    S.members.map(function(m,i){ return '<div class="grid2"><label class="f">'+esc(m.name)+' 닉네임<input id="m_n'+i+'" value="'+esc(m.nick||'')+'" placeholder="'+esc(m.name)+'"></label><label class="f">직업<select id="m_j'+i+'">'+jobOptions(m.job)+'</select></label></div>'; }).join('')+
+    '<div class="btns"><button class="btn sub sm" onclick="saveMembers()">구성원 저장</button>'+(S.members.length < 2 ? '<button class="btn sub sm" onclick="addSpouse()">+ 배우자 추가</button>' : '')+'</div></div>'+
+    '<div class="card"><h2>화면</h2><div class="btns" style="margin-top:0"><button class="btn sub" onclick="setTheme(\''+(dark?'light':'dark')+'\')">'+(dark?'라이트 테마':'다크 테마')+'</button></div></div>'+
+    '<div class="card"><h2>처음부터 다시</h2><div class="btns" style="margin-top:0"><button class="btn sub" onclick="startWizard()">설정 마법사 다시 하기</button><button class="btn bad" onclick="resetAll()">장부 지우기</button></div></div>'+
+    '<div class="tiny" style="margin:4px 2px 10px">이 앱의 계산은 단순화한 추정이며 투자·세무·법률 조언이 아닙니다. 연금·세금은 관련 기관에서 확인하세요.</div>'+
+    '<div class="btns"><button class="btn sub" onclick="closeModal()">닫기</button></div>');
+}
+function saveMembers(){
+  var next = S.members.map(function(m,i){ return {name:m.name, nick:fv('m_n'+i).trim(), job:fv('m_j'+i)}; });
+  var shown = next.map(function(m){ return m.nick || m.name; });
+  if(shown.some(function(n,i){ return shown.indexOf(n) !== i; }) || shown.indexOf('공동') >= 0){ alert('닉네임이 서로 같거나 \'공동\'입니다. 다르게 정해 주세요'); return; }
+  S.members = next;
+  closeModal(); commit(); toast('구성원을 저장했습니다');
+}
+function setTheme(t){ document.documentElement.dataset.theme = t; localStorage.setItem('lp_theme', t);
+  document.querySelector('meta[name=theme-color]').content = t === 'light' ? '#EEF3FB' : '#080C12'; openSettings(); }
+function addSpouse(){
+  if(S.members.length >= 2) return;
+  S.members.push({name:'배우자', nick:'', job:'company'});
+  if(!S.family.some(function(f){ return f.rel === '배우자'; })) S.family.push({id:uid(), name:'배우자', rel:'배우자', birth:''});
+  commit(); openSettings(); toast('배우자를 추가했습니다 · 가족 나이에서 생년월일을 넣으세요');
+}
+function resetAll(){
+  if(!confirm('장부를 모두 지우고 처음부터 시작할까요?\n(지우기 전 상태는 이 기기에 백업해 둡니다)')) return;
+  try{ localStorage.setItem('lp_backup_' + new Date().toISOString().slice(0,16), JSON.stringify(S)); }catch(e){}
+  S = defaultData(); SNAPS = {}; localStorage.setItem(LS_SNAPS, '{}'); commit(); closeModal(); startWizard();
+}
+function exportData(){
+  META.lastBackup = new Date().toISOString(); saveMeta();
+  var blob = new Blob([JSON.stringify({data:S, snapshots:SNAPS}, null, 2)], {type:'application/json'});
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'lifeplan-' + new Date().toISOString().slice(0,10) + '.json'; a.click();
+}
+function importFile(inp){
+  var f = inp.files[0]; if(!f) return;
+  f.text().then(function(txt){
+    var j = JSON.parse(txt), d = j.data || j;
+    if(j.mode === 'merge'){
+      var keys = Object.keys(d), add = j.append || {};
+      var desc = keys.map(function(k){ return {salary:'급여 장부', expenses:'고정지출', family:'가족'}[k] || k; }).concat(Object.keys(add).map(function(k){ return {lumps:'목돈 일정', debts:'부채', incomes:'소득 항목'}[k] + ' ' + add[k].length + '건 추가'; }));
+      if(!confirm('다음 항목만 이 파일 내용으로 바꾸거나 더합니다. 나머지 장부는 그대로입니다.\n\n- ' + desc.join('\n- '))) return;
+      keys.forEach(function(k){ S[k] = d[k]; });
+      Object.keys(add).forEach(function(k){ (add[k] || []).forEach(function(x){ var o = Object.assign({}, x, {id:uid()}); if(!S[k].some(function(y){ return y.name === o.name && (y.month || '') === (o.month || ''); })) S[k].push(o); }); });
+      S = normalize(S); closeModal(); commit(); toast('합쳤습니다'); return;
+    }
+    if(!d || !Array.isArray(d.assets)) throw new Error('형식이 맞지 않습니다');
+    _imp = {d:d, snaps:j.snapshots};
+    openModal('<h3>백업 파일 불러오기</h3><div class="muted" style="line-height:1.7"><b>바꾸기</b>: 이 기기 장부를 파일 내용으로 바꿉니다 (폰을 바꿨을 때)<br><b>합치기</b>: 이 기기 장부에 없는 항목만 파일에서 더합니다 (배우자가 보낸 파일)</div>'+
+      '<div class="btns"><button class="btn" onclick="doImport(\'replace\')">바꾸기</button><button class="btn sub" onclick="doImport(\'merge\')">합치기</button><button class="btn sub" onclick="closeModal()">취소</button></div>');
+  }).catch(function(e){ alert('가져오기 실패: ' + e.message); });
+  inp.value = '';
+}
+var _imp = null;
+function doImport(mode){
+  if(!_imp) return;
+  var d = _imp.d, j = {snapshots:_imp.snaps}; _imp = null;
+  try{ localStorage.setItem('lp_backup_' + new Date().toISOString().slice(0,16), JSON.stringify(S)); }catch(e){}
+  if(mode === 'merge'){
+    var o = normalize(d), added = 0;
+    ['assets','debts','incomes','lumps','expenses','family','checklist','moves'].forEach(function(k){
+      (o[k] || []).forEach(function(x){ if(!S[k].some(function(y){ return y.id === x.id; })){ S[k].push(x); added++; } });
+    });
+    Object.keys(o.salary || {}).forEach(function(y){ Object.keys(o.salary[y] || {}).forEach(function(w){
+      S.salary[y] = S.salary[y] || {}; if(salEmpty(S.salary[y][w]) && !salEmpty(o.salary[y][w])){ S.salary[y][w] = o.salary[y][w]; added++; } }); });
+    if(S.members.length < (o.members || []).length) S.members = S.members.concat(o.members.slice(S.members.length));
+    if(j.snapshots){ Object.keys(j.snapshots).forEach(function(k){ if(!SNAPS[k]) SNAPS[k] = j.snapshots[k]; }); localStorage.setItem(LS_SNAPS, JSON.stringify(SNAPS)); }
+    closeModal(); commit(); toast(added + '개 항목을 더했습니다'); return;
+  }
+  {
+    S = normalize(d);
+    if(j.snapshots){ SNAPS = Object.assign({}, SNAPS, j.snapshots); localStorage.setItem(LS_SNAPS, JSON.stringify(SNAPS)); if(_user) Object.keys(j.snapshots).forEach(function(k){ pushSnap(k); }); }
+    closeModal(); commit(); toast('가져왔습니다');
+  }
+}
+
+/* ════════ 스냅샷 ════════ */
+function saveSnapshot(){
+  var t = totals(true), m = thisMonth();
+  if(SNAPS[m] && !confirm(ymDot(m)+' 기록을 지금 값으로 바꿀까요?')) return;
+  SNAPS[m] = {net_worth:t.net, total_assets:t.assets, total_debts:t.debts, breakdown:t.byCat};
+  localStorage.setItem(LS_SNAPS, JSON.stringify(SNAPS));
+  pushSnap(m); render(); toast(ymDot(m)+' 순자산 '+fm(t.net)+' 기록');
+}
+async function pushSnap(m){
+  if(!sb || !_user) return;
+  var s = SNAPS[m];
+  var r = await sb.from('cashflow_snapshots').upsert({household:'home', month:m, net_worth:s.net_worth, total_assets:s.total_assets, total_debts:s.total_debts, breakdown:s.breakdown, created_by:_user.email});
+  if(r.error) setCloud('error', r.error.message);
+}
+async function pullSnaps(){
+  var r = await sb.from('cashflow_snapshots').select('month,net_worth,total_assets,total_debts,breakdown').eq('household','home');
+  if(r.error) return;
+  var server = {};
+  r.data.forEach(function(s){ server[s.month] = {net_worth:+s.net_worth, total_assets:+s.total_assets, total_debts:+s.total_debts, breakdown:s.breakdown}; });
+  Object.keys(SNAPS).forEach(function(k){ if(!server[k]) pushSnap(k); });   // 이 기기에만 있던 기록은 올림
+  SNAPS = Object.assign({}, SNAPS, server);
+  localStorage.setItem(LS_SNAPS, JSON.stringify(SNAPS));
+}
+
+/* ════════ 클라우드 (Supabase personal-apps) ════════ */
+var sb = null;   // 범용판: 서버 없이 이 기기에만 저장
+var _user = null,   // 범용판: 로그인 없음
+   _unused0 = null, _otpEmail = '', _pushTimer = null, _busy = false;
+
+// 로그인 이메일 → 가족 구성원 이름 (없으면 @ 앞부분)
+// 구성원 고정 이름(본인·배우자)은 데이터 연결용, 화면에는 닉네임
+function salEmpty(P){
+  if(!P) return true;
+  var hasM = (P.months || []).some(function(v){ return v != null && v !== '' && num(v) !== 0; });
+  var a = P.auto || {};
+  return !hasM && !(P.extras || []).length && !(num(a.base1) || num(a.base2));
+}
+function fixMemberKeys(d){
+  var MEMBER_KEYS = ['본인', '배우자'];   // 데이터 읽기 중에 불리므로 함수 안에 둠
+  if(!Array.isArray(d.members)) return;
+  var moved = false, snap = null;
+  d.members.forEach(function(m, i){
+    var key = MEMBER_KEYS[i]; if(!key || m.name === key) return;
+    if(!snap) snap = JSON.stringify(d);
+    var old = m.name; moved = true;
+    if(!m.nick) m.nick = old;
+    Object.keys(d.salary || {}).forEach(function(y){
+      var Y = d.salary[y]; if(!Y || !Y[old]) return;
+      var A = Y[key], B = Y[old];
+      if(salEmpty(A)) Y[key] = B;
+      else if(!salEmpty(B)){                       // 둘 다 내용이 있으면 빈 달만 채워 합침
+        A.months = A.months || []; (B.months || []).forEach(function(v, k){ if((A.months[k] == null || A.months[k] === '') && v != null && v !== '') A.months[k] = v; });
+        (B.extras || []).forEach(function(e){ if(!(A.extras || []).some(function(x){ return x.name === e.name && x.month === e.month; })) (A.extras = A.extras || []).push(e); });
+        if(!(num((A.auto || {}).base1)) && B.auto) A.auto = B.auto;
+      }
+      delete Y[old];
+    });
+    Object.keys(d).forEach(function(k){ if(Array.isArray(d[k])) d[k].forEach(function(x){ if(x && x.owner === old) x.owner = key; }); });
+    if(typeof OWNER !== 'undefined' && OWNER === old){ OWNER = key; try{ localStorage.setItem('lp_owner', key); }catch(e){} }
+    m.name = key;
+  });
+  if(moved && snap){ try{ localStorage.setItem('lp_backup_' + new Date().toISOString().slice(0,16), snap); }catch(e){} }
+}
+function nm(key){ var m = (S.members || []).find(function(x){ return x.name === key; }); return m && m.nick ? m.nick : key; }
+function famName(f){
+  var k = f.rel === '본인' ? '본인' : f.rel === '배우자' ? '배우자' : null;
+  var m = k && (S.members || []).find(function(x){ return x.name === k; });
+  return m && m.nick ? m.nick : f.name;
+}
+function whoName(email){
+  if(!email) return '';
+  if(/^auto/.test(email)) return '자동 갱신';
+  var e = String(email).toLowerCase(), m = S.members.find(function(x){ return x.email && x.email.toLowerCase() === e; });
+  return m ? nm(m.name) : e.split('@')[0];
+}
+function setCloud(st, msg){
+  var el = document.getElementById('cloud');
+  var map = {off:['','📱 이 기기 저장'], saving:['var(--accent)','동기화 중…'], saved:['var(--good)','☁ 동기화됨'], error:['var(--bad)','☁ 오류']};
+  var m = map[st] || map.off;
+  var txt = m[1]; if(st === 'saved' && _user) txt = '☁ ' + whoName(_user.email) + ' · 동기화됨';
+  el.style.color = m[0]; el.textContent = txt; el.title = msg || (_user ? _user.email : '');
+  if(st === 'error' && msg) console.warn('[cloud]', msg);
+}
+async function sendCode(){
+  var email = fv('f_email').trim().toLowerCase(); if(!email) return;
+  var r = await sb.auth.signInWithOtp({email:email, options:{shouldCreateUser:true, emailRedirectTo:HOME_URL}});
+  if(r.error){ alert('코드 전송 실패: ' + r.error.message); return; }
+  _otpEmail = email; openSettings(); toast('메일로 6자리 코드를 보냈습니다');
+}
+async function verifyCode(){
+  var token = fv('f_code').trim(); if(!token) return;
+  var r = await sb.auth.verifyOtp({email:_otpEmail, token:token, type:'email'});
+  if(r.error){ alert('코드 확인 실패: ' + r.error.message); return; }
+  _otpEmail = ''; closeModal();
+}
+async function signOut(){ await sb.auth.signOut(); closeModal(); }
+
+function cloudSchedule(){
+  if(!sb || !_user) return;
+  clearTimeout(_pushTimer); _pushTimer = setTimeout(cloudPush, 1500);
+}
+// 같은 시각인지 비교 (서버는 +00:00, 앱은 Z 로 적어 글자로는 다를 수 있음)
+function sameTime(a, b){ return !!a && !!b && Date.parse(a) === Date.parse(b); }
+async function cloudPush(){
+  if(!sb || !_user || _busy) return;
+  _busy = true; setCloud('saving');
+  try{
+    // 다른 사람이 먼저 바꿨는지 확인 (마지막으로 받은 시각과 비교)
+    var cur = await sb.from('cashflow_data').select('updated_at').eq('household','home').maybeSingle();
+    if(cur.error) throw cur.error;
+    if(cur.data && META.base && !sameTime(cur.data.updated_at, META.base)){
+      _busy = false; await resolveConflict(); return;
+    }
+    var now = new Date().toISOString();
+    var r = await sb.from('cashflow_data').upsert({household:'home', data:S, updated_at:now, updated_by:_user.email}).select('updated_at').single();
+    if(r.error) throw r.error;
+    META.base = (r.data && r.data.updated_at) || now; META.dirty = false; META.by = _user.email; META.at = META.base; saveMeta();   // 서버가 돌려준 시각을 기억
+    setCloud('saved');
+  }catch(e){
+    setCloud('error', /relation|does not exist|schema cache/i.test(e.message) ? 'cashflow 테이블이 없습니다 — supabase/cashflow.sql 을 먼저 실행하세요' : e.message);
+  }
+  _busy = false;
+}
+async function resolveConflict(){
+  var r = await sb.from('cashflow_data').select('data,updated_at,updated_by').eq('household','home').maybeSingle();
+  if(r.error || !r.data) return;
+  var by = r.data.updated_by || '', who = by ? whoName(by) : '다른 기기';
+  if(_user && by.toLowerCase() === _user.email.toLowerCase()) who = whoName(by) + '(이 계정의 다른 기기)';
+  if(/^auto/.test(by)) who = '자동 갱신(매월 1일)';
+  if(confirm(who + '이(가) 다른 기기에서 서버 장부를 먼저 바꿨습니다.\n\n확인: 서버 장부로 바꾸기 (이 기기의 최근 수정은 버림)\n취소: 이 기기 장부로 서버를 덮어쓰기')){
+    applyServer(r.data);
+  } else {
+    META.base = r.data.updated_at; saveMeta(); cloudPush();
+  }
+}
+function applyServer(row){
+  S = normalize(row.data || {});
+  localStorage.setItem(LS_DATA, JSON.stringify(S));
+  META.base = row.updated_at; META.dirty = false; META.by = row.updated_by || ''; META.at = row.updated_at; saveMeta();
+  render(); setCloud('saved');
+}
+async function cloudPull(manual){
+  if(!sb || !_user || _busy) return;
+  _busy = true; setCloud('saving');
+  try{
+    var r = await sb.from('cashflow_data').select('data,updated_at,updated_by').eq('household','home').maybeSingle();
+    if(r.error) throw r.error;
+    await pullSnaps();
+    _busy = false;
+    if(!r.data){                               // 서버가 비어 있음 → 이 기기 장부로 시작
+      if(S.assets.length || S.incomes.length) await cloudPush(); else setCloud('saved');
+    } else if(sameTime(r.data.updated_at, META.base)){ // 서버 변화 없음
+      META.by = r.data.updated_by || META.by; META.at = r.data.updated_at; saveMeta();
+      if(META.dirty) await cloudPush(); else { setCloud('saved'); render(); }
+    } else if(META.dirty && (S.assets.length || S.incomes.length)){
+      await resolveConflict();
+    } else {
+      applyServer(r.data);
+    }
+    if(manual) toast('동기화했습니다');
+  }catch(e){
+    _busy = false;
+    setCloud('error', /relation|does not exist|schema cache/i.test(e.message) ? 'cashflow 테이블이 없습니다 — supabase/cashflow.sql 을 먼저 실행하세요' : e.message);
+    if(manual) alert('동기화 실패: ' + e.message);
+  }
+}
+
+/* ── 리밸런서 연동: 계좌별로 자산에 연결 (주식 계좌 → 주식, 연금저축 계좌 → 연금저축 …) ── */
+var _rbLast = null;   // {date, accounts:{이름:{value}}}  — 로그인한 사람의 리밸런서 최신 기록
+function isRbAsset(id){ return Object.keys(S.rbMap).some(function(k){ return S.rbMap[k] === id; }); }
+async function fetchRebalancer(){
+  if(!sb || !_user){ alert('⚙ 설정에서 리밸런서와 같은 이메일로 로그인하세요'); return null; }
+  var r = await sb.from('rebalancer_data').select('history').eq('user_id', _user.id).maybeSingle();
+  if(r.error){ alert('리밸런서 데이터를 읽지 못했습니다: ' + r.error.message); return null; }
+  var h = (r.data && r.data.history) || {}, keys = Object.keys(h).sort();
+  if(!keys.length){ alert('리밸런서에 자산 기록이 없습니다. 리밸런서에서 시세 조회 후 동기화하세요.'); return null; }
+  var last = keys[keys.length-1];
+  _rbLast = {date:last, accounts:h[last].accounts || {}};
+  return _rbLast;
+}
+async function openRbMap(){
+  var rb = await fetchRebalancer(); if(!rb) return;
+  var names = Object.keys(rb.accounts);
+  var opts = function(sel){ return '<option value="">연결 안 함</option>' + S.assets.filter(function(a){ return FIN_CATS.indexOf(a.cat) >= 0; }).map(function(a){
+    return '<option value="'+a.id+'" '+(a.id===sel?'selected':'')+'>'+esc(assetLabel(a))+'</option>'; }).join('') + '<option value="new">+ 새 자산으로 추가</option>'; };
+  openModal('<h3>리밸런서 계좌 연결</h3><div class="tiny" style="margin-bottom:12px">'+esc(rb.date)+' 기록 기준. 계좌마다 라이프플랜 자산을 고르면, 같은 자산에 연결된 계좌들의 평가액 합계가 그 자산 금액이 됩니다.</div>'+
+    names.map(function(n,i){ return '<label class="f">'+esc(n)+' <span class="num">'+fm(num(rb.accounts[n].value)/10000)+'</span><select id="rbm'+i+'">'+opts(S.rbMap[n])+'</select></label>'; }).join('')+
+    '<div class="btns"><button class="btn" onclick="saveRbMap()">저장하고 불러오기</button><button class="btn sub" onclick="closeModal()">취소</button></div>');
+}
+// 자산 이름에 명의가 이미 들어 있으면 한 번만 표시
+function assetLabel(a){ var o = a.owner ? (a.owner === '공동' ? '공동' : nm(a.owner)) : ''; return a.name + (o && a.name.indexOf(o) < 0 ? ' (' + o + ')' : ''); }
+// 리밸런서 계좌 이름으로 새 자산 만들기 (이름에 연금·IRP·퇴직이 있으면 연금계좌)
+function newAssetFromAccount(n){
+  var cat = /연금|IRP|퇴직|DC|ISA/i.test(n) ? 'pension' : 'stock';
+  if(/ISA/i.test(n)) cat = 'stock';
+  var a = {id:uid(), name:n, cat:cat, owner:'', value:0, note:'', bucket:defaultBucket(cat)};
+  S.assets.push(a); return a.id;
+}
+function saveRbMap(){
+  Object.keys(_rbLast.accounts).forEach(function(n,i){ var v = fv('rbm'+i); S.rbMap[n] = v === 'new' ? newAssetFromAccount(n) : v; });
+  closeModal(); applyRebalancer();
+}
+async function syncRebalancer(){
+  var rb = await fetchRebalancer(); if(!rb) return;
+  var unmapped = Object.keys(rb.accounts).filter(function(n){ return !(n in S.rbMap); });
+  if(unmapped.length){ toast('연결 안 된 계좌가 있어 연결 화면을 엽니다'); openRbMap(); return; }
+  applyRebalancer();
+}
+function applyRebalancer(){
+  var rb = _rbLast, sums = {}, msgs = [];
+  Object.keys(rb.accounts).forEach(function(n){ var id = S.rbMap[n]; if(id) sums[id] = (sums[id]||0) + num(rb.accounts[n].value); });
+  Object.keys(sums).forEach(function(id){
+    var a = S.assets.find(function(x){ return x.id === id; }); if(!a) return;
+    var man = Math.round(sums[id]/10000);
+    if(man !== num(a.value)) msgs.push(a.name + ' ' + fm(num(a.value)) + '→' + fm(man));
+    a.value = man; a.src = '리밸런서 적용 (' + (+rb.date.slice(5,7)) + '월)'; a.srcDetail = '리밸런서 ' + rb.date + ' 기록';
+  });
+  commit(); toast(msgs.length ? msgs.join(', ') : '변동 없음 (' + rb.date + ')');
+}
+
+/* ════════ 부동산 실거래가 (국토부 API, Edge Function realestate-proxy) ════════ */
+var _trade = null;
+async function fetchTrades(id, months){
+  var a = S.assets.find(function(x){ return x.id === id; }); if(!a) return;
+  if(!sb || !_user){ alert('⚙ 설정에서 로그인한 뒤 조회할 수 있습니다'); return; }
+  if(!/^\d{5}$/.test(a.lawd || '') || !a.apt){ alert('시군구 코드 5자리와 단지명을 입력하세요'); return; }
+  months = months || 6;
+  openModal('<h3>'+esc(a.name)+' 실거래가</h3><div class="empty">최근 '+months+'개월 거래를 찾는 중…</div>');
+  var r = await sb.functions.invoke('realestate-proxy', {body:{lawd:a.lawd, apt:a.apt, area:num(a.area), dong:a.dong || '', months:months}, headers:{'x-region':'ap-northeast-2'}});
+  var d = r.data || {};
+  if(r.error || !d.ok){
+    var msg = d.message || (r.error && r.error.message) || '알 수 없는 오류';
+    openModal('<h3>실거래가 조회 실패</h3><div class="alert">'+esc(msg)+'</div><div class="tiny">처음이라면 Edge Function 배포와 DATA_GO_KR_KEY 등록이 필요합니다 (README 참고)</div><div class="btns"><button class="btn sub" onclick="closeModal()">닫기</button></div>');
+    return;
+  }
+  if(!d.items.length && months < 12){ return fetchTrades(id, 12); }
+  _trade = {id:id, items:d.items, from:d.from, to:d.to};
+  var prices = d.items.map(function(t){ return t.price; }).sort(function(x,y){ return x-y; });
+  var n = prices.length, med = n ? (n % 2 ? prices[(n-1)/2] : Math.round((prices[n/2-1] + prices[n/2]) / 2)) : 0;
+  _trade.median = med;
+  var per = function(s){ return s.slice(0,4)+'.'+s.slice(4); };
+  var h = '<h3>'+esc(a.name)+' 실거래가</h3><div class="tiny" style="margin-bottom:10px">'+per(d.from)+'~'+per(d.to)+' · '+esc(a.apt)+(a.area?' · 전용 '+esc(a.area)+'㎡ ±1.5':'')+' · 해제 거래 제외</div>';
+  if(!n){
+    h += '<div class="alert">최근 '+months+'개월 거래가 없습니다. 단지명·면적·시군구 코드를 확인하거나 KB 시세를 참고하세요.</div>';
+  } else {
+    h += '<div class="grid2"><div class="kv"><div class="k">중간값 ('+n+'건)</div><div class="v">'+fm(med)+'</div></div><div class="kv"><div class="k">지금 장부</div><div class="v">'+fm(num(a.value))+'</div></div></div>'+
+      '<table style="margin-top:10px"><tr><th>계약일</th><th>층</th><th>면적</th><th>금액</th></tr>'+
+      d.items.slice(0,15).map(function(t){ return '<tr><td>'+esc(t.date.slice(2).replace(/-/g,'.'))+'</td><td>'+esc(t.floor)+'</td><td>'+t.area+'</td><td>'+fm(t.price)+'</td></tr>'; }).join('')+'</table>'+
+      (n > 15 ? '<div class="tiny" style="margin-top:4px">최근 15건만 표시</div>' : '');
+  }
+  h += '<div class="btns">'+(n?'<button class="btn" onclick="applyTrade()">중간값으로 반영</button>':'')+(months<12?'<button class="btn sub" onclick="fetchTrades(\''+id+'\',12)">12개월로 다시</button>':'')+
+    (a.kbUrl?'<button class="btn sub" onclick="window.open(\''+esc(a.kbUrl)+'\',\'_blank\')">KB 시세</button>':'')+'<button class="btn sub" onclick="closeModal()">닫기</button></div>';
+  openModal(h);
+}
+function applyTrade(){
+  var a = S.assets.find(function(x){ return x.id === _trade.id; }); if(!a) return;
+  var old = num(a.value);
+  a.value = _trade.median;
+  a.src = '실거래가 적용 (' + (new Date().getMonth()+1) + '월)';
+  a.srcDetail = '중간값 ' + _trade.items.length + '건 · ' + _trade.from.slice(0,4)+'.'+_trade.from.slice(4) + '~' + _trade.to.slice(0,4)+'.'+_trade.to.slice(4);
+  closeModal(); commit(); toast(a.name + ' ' + fm(old) + ' → ' + fm(a.value));
+}
+
+/* ── 매월 자동 갱신 (Edge Function cashflow-monthly) 수동 실행 ── */
+async function runMonthly(){
+  if(!sb || !_user) return;
+  if(META.dirty){ await cloudPush(); if(META.dirty){ alert('먼저 이 기기 장부를 서버에 저장하지 못했습니다. 잠시 뒤 다시 시도하세요.'); return; } }
+  openModal('<h3>자동 갱신</h3><div class="empty">부동산 시세와 리밸런서 값을 반영하는 중… (최대 1분)</div>');
+  var r = await sb.functions.invoke('cashflow-monthly', {body:{}, headers:{'x-region':'ap-northeast-2'}});
+  var d = r.data || {};
+  if(r.error || !d.ok){
+    openModal('<h3>자동 갱신 실패</h3><div class="alert">'+esc(d.message || (r.error && r.error.message) || '알 수 없는 오류')+'</div><div class="tiny">cashflow-monthly 배포와 Secret 등록을 확인하세요 (README)</div><div class="btns"><button class="btn sub" onclick="closeModal()">닫기</button></div>');
+    return;
+  }
+  var line = function(x){ return '<tr><td>'+esc(x.name)+'</td><td>'+(x.skipped ? esc(x.skipped) : fm(x.old)+' → '+fm(x.value))+'</td></tr>'; };
+  var h = '<h3>자동 갱신 완료</h3><table><tr><th>자산</th><th>변경</th></tr>'+d.realestate.concat(d.rebalancer).map(line).join('')+'</table>'+
+    '<div class="tiny" style="margin-top:8px">'+(d.snapshot ? ymDot(d.month)+' 순자산 기록 저장' : ymDot(d.month)+' 기록은 이미 있어 그대로 둠')+'</div>'+
+    (d.errors.length ? '<div class="alert" style="margin-top:8px">'+d.errors.map(esc).join('<br>')+'</div>' : '')+
+    '<div class="btns"><button class="btn" onclick="closeModal()">확인</button></div>';
+  openModal(h);
+  await cloudPull();
+}
+
+/* ════════ 수입지출: 급여 장부 + 고정지출 ════════ */
+var SAL_YEAR = new Date().getFullYear();
+// 원 단위로 넣어도 만원으로 바꿈 (10만 이상이면 원으로 봄)
+function toMan(v){ var n = num(v); return Math.abs(n) >= 100000 ? Math.round(n/100)/100 : n; }
+function fmx(v){ return HIDE ? '••••' : Math.round(v).toLocaleString('ko-KR'); }   // 급여 표시: 소수점 없이
+function salOf(y, who){ var Y = S.salary[y] = S.salary[y] || {}; var P = Y[who] = Y[who] || {months:[], extras:[]}; if(!Array.isArray(P.months)) P.months = []; if(!Array.isArray(P.extras)) P.extras = []; return P; }
+// 급여는 만원 단위 절삭
+function manFloor(v){ return Math.floor(toMan(v) + 1e-9); }
+// 설·추석이 든 달 (명절휴가비 기본 지급 월 — 바꿀 수 있음)
+var HOLI = {2024:[2,9],2025:[1,10],2026:[2,9],2027:[2,9],2028:[1,10],2029:[2,9],2030:[2,9],2031:[1,10],2032:[2,9],2033:[1,9],2034:[2,9],2035:[2,9],2036:[1,10],2037:[2,9],2038:[2,9],2039:[1,10],2040:[2,9],2041:[2,9]};
+function autoCfg(P, y){ var a = P.auto || {}; var hd = HOLI[y] || [2,9]; return {base1:num(a.base1), step:num(a.step), base2:num(a.base2), days:num(a.days), leaveMonth:num(a.leaveMonth)||12, seol:num(a.seol)||hd[0], chuseok:num(a.chuseok)||hd[1]}; }
+function autoOn(P){ return P && P.auto && num(P.auto.base1) > 0; }
+// 본봉으로 자동 계산하는 수당: 명절휴가비 = 본봉 × 60%, 연가보상비 = 본봉 × 86% ÷ 30 × 일수
+function autoExtras(y, P){
+  if(!autoOn(P)) return [];
+  var c = autoCfg(P, y), baseAt = function(m){ return c.step && m >= c.step && c.base2 ? c.base2 : c.base1; };
+  var out = [
+    {name:'명절휴가비(설)', month:c.seol, amount:Math.floor(baseAt(c.seol)*0.6), auto:true, how:'본봉 '+(Math.round(baseAt(c.seol)*100)/100)+' × 60%'},
+    {name:'명절휴가비(추석)', month:c.chuseok, amount:Math.floor(baseAt(c.chuseok)*0.6), auto:true, how:'본봉 '+(Math.round(baseAt(c.chuseok)*100)/100)+' × 60%'}
+  ];
+  if(c.days > 0) out.push({name:'연가보상비', month:c.leaveMonth, amount:Math.floor(baseAt(c.leaveMonth)*0.86/30*c.days), auto:true, how:'본봉 × 86% ÷ 30 × '+c.days+'일'});
+  return out;
+}
+var AUTO_NAME = /^(명절휴가비|연가보상비)/;
+// 수동 입력 + 자동 계산 수당 (자동이 켜지면 같은 종류 수동 항목은 빼고 셈)
+function allExtras(y, P){
+  var on = autoOn(P);
+  return (P.extras || []).filter(function(e){ return !(on && AUTO_NAME.test(e.name)); }).concat(autoExtras(y, P));
+}
+function salStat(y, who){
+  var P = (S.salary[y] || {})[who]; if(!P) return null;
+  var ms = (P.months || []).map(function(v){ return Math.floor(num(v) + 1e-9); }).filter(function(v){ return v > 0; });
+  var avg = ms.length ? sum(ms)/ms.length : 0, ex = sum(allExtras(y, P), function(e){ return Math.floor(num(e.amount) + 1e-9); });
+  if(!ms.length && !ex) return null;
+  return {n:ms.length, avg:avg, regular:sum(ms), extras:ex, annual:avg*12 + ex, monthly:avg + ex/12};
+}
+function salYears(){ var ys = Object.keys(S.salary).map(Number).filter(function(y){ return S.members.some(function(m){ return salStat(y, m.name); }); }); return ys.sort(); }
+function viewMoney(){
+  var y = SAL_YEAR, years = salYears(), now = nowIdx(), cy = new Date().getFullYear();
+  // 연도 버튼: 선택 연도 앞뒤 1년씩 + ◀ ▶ 로 이동 (기록 있는 해는 점 표시)
+  var chips = [];
+  for(var k = y-1; k <= y+1; k++) chips.push(k);
+  var h = '<div class="chips" style="flex-wrap:nowrap"><button class="chip" onclick="SAL_YEAR--;render()" aria-label="이전 연도">◀</button>'+
+    chips.map(function(k){ return '<button class="chip '+(k===y?'on':'')+'" onclick="SAL_YEAR='+k+';render()">'+k+(years.indexOf(k)>=0?' ·':'')+'</button>'; }).join('')+
+    '<button class="chip" onclick="SAL_YEAR++;render()" aria-label="다음 연도">▶</button>'+(y!==cy?'<button class="chip" onclick="SAL_YEAR='+cy+';render()">올해</button>':'')+'</div>';
+  // 급여 장부
+  var hh = 0, mm = [];
+  h += '<div class="pair">';
+  S.members.forEach(function(m){
+    var P = salOf(y, m.name), st = salStat(y, m.name);
+    if(st) hh += st.annual;
+    mm.push([esc(nm(m.name))+' 월 환산', st ? fmx(st.monthly)+'만' : '–', '', y+'년 비정기 포함']);
+    h += '<div class="card"><h2>'+esc(nm(m.name))+' 급여 <span class="tiny" style="font-weight:400">'+y+'년</span><span class="sp"></span>'+(jobOf(m.name) === 'public' ? '<button class="btn sub sm" onclick="openSalAuto('+y+',\''+esc(m.name)+'\')">⚙ 본봉 설정</button>' : '')+'</h2>'+salRows(y, m.name, P, st)+
+      (st ? '<div class="grid2" style="margin-top:10px"><div class="kv"><div class="k">연 환산 총수입</div><div class="v">'+fm(st.annual)+'</div></div><div class="kv"><div class="k">월 환산 (비정기 포함)</div><div class="v">'+fmx(st.monthly)+'만</div></div></div>' : '')+
+      '</div>';
+  });
+  h += '</div>';
+  // 저축 여력
+  var other = sum(S.incomes.filter(function(x){ return !isSalary(x) && expActiveInc(x, now); }), function(x){ return num(x.monthly); });
+  var exp = expenseAt(now), saving = sum(S.expenses.filter(function(x){ return x.cat === 'saving' && expActive(x, now); }), function(x){ return num(x.monthly); });
+  var dc = debtCostAt(now);
+  var inM = hh/12 + other, cap = inM - exp - dc;
+  h = h.replace('<div class="pair">', kpis(mm.concat([['월 고정지출', fm(exp), 'neg'], ['월 저축 여력', fm(cap), cap<0?'neg':'pos']])) + '<div class="pair">');
+  h += '<div class="card R"><h2>저축 여력 ('+y+'년 급여 기준)</h2><table>'+
+    '<tr><td>급여 (비정기 포함, 월 환산)</td><td>'+fm(hh/12)+'</td></tr>'+
+    '<tr><td>그 밖의 소득 (월세 등)</td><td>'+fm(other)+'</td></tr>'+
+    '<tr><td>월 고정지출</td><td class="neg">−'+fm(exp)+'</td></tr>'+
+    (dc ? '<tr><td>대출 이자·상환</td><td class="neg">−'+fm(dc)+'</td></tr>' : '')+
+    '<tr><td>월 저축 여력</td><td class="'+(cap<0?'neg':'pos')+'">'+fm(cap)+'</td></tr></table>'+
+    '<div class="btns"><button class="btn sm" onclick="applySaving('+Math.round(cap)+')">시뮬레이션 \'그 전 월 저축액\'에 반영</button>'+(S.members.some(function(m){ return !S.incomes.some(function(x){ return isSalary(x) && x.owner === m.name; }); }) ? '<button class="btn sub sm" onclick="applySalaryIncome('+y+')">현금흐름에 급여 항목 연결</button>' : '')+'</div>'+
+    '<div class="tiny" style="margin-top:6px">지금 시뮬레이션 값: 월 '+fm(num(S.sim.saveBefore))+'</div></div>';
+  // 고정지출
+  h += viewExpenses();
+  return h;
+}
+function expActiveInc(x, i){ var s = ymIdx(x.start), e = incEnd(x); return (s == null || s <= i) && (e == null || i <= e); }
+function setSal(y, who, i, v){ var P = salOf(y, who); P.months[i] = String(v).trim() === '' ? null : manFloor(v); commit(); }
+// 본봉 입력 칸: 승급 전·후 본봉, 승급 월, 연가보상 일수 (+ 명절·연가 지급 월)
+// 급여 카드: 실수령·본봉·수당을 한 줄씩, 눌러서 세부 입력
+// 카드 아래 본봉 설정 요약 줄 (누르면 본봉 설정 창)
+function salAutoLine(y, who, P){
+  var c = autoCfg(P, y), on = autoOn(P);
+  return '<div class="row" style="margin-top:10px;border-top:1px solid var(--bd);border-bottom:0" onclick="openSalAuto('+y+',\''+esc(who)+'\')"><div class="m"><div class="tiny">⚙ '+
+    (on ? '본봉 '+c.base1+(c.base2 ? ' → '+c.step+'월 '+c.base2 : '')+(c.days ? ' · 연가 '+c.days+'일' : '')+'<br>명절휴가비·연가보상비 자동 계산 중' : '본봉을 넣으면 명절휴가비·연가보상비가 자동 계산됩니다')+
+    '</div></div><div class="v tiny">›</div></div>';
+}
+function salRows(y, who, P, st){
+  var w = esc(who), c = autoCfg(P, y), on = autoOn(P);
+  var filled = (P.months || []).filter(function(v){ return num(v) > 0; }).length;
+  var ex = allExtras(y, P), exSum = sum(ex, function(e){ return Math.floor(num(e.amount) + 1e-9); });
+  var row = function(title, sub, val, fn){ return '<div class="row" onclick="'+fn+'('+y+',\''+w+'\')"><div class="m"><div class="t">'+title+'</div><div class="tiny">'+sub+'</div></div><div class="v">'+val+' ›</div></div>'; };
+  return row('실수령액', filled ? filled+'개월 입력 · 월 평균' : '눌러서 월별 입력', filled ? fmx(st ? st.avg : 0)+'만' : '', 'openSalMonths')+
+    row('기타 수당 및 세금 환급', ex.length ? ex.length+'건'+(on ? ' (자동 '+autoExtras(y, P).length+'건 포함)' : '') : '성과상여금·연말정산 환급 등', ex.length ? fm(exSum) : '', 'openSalExtras');
+}
+function openSalMonths(y, who){
+  var P = salOf(y, who), w = esc(who);
+  openModal('<h3>'+esc(nm(who))+' '+y+'년 실수령액</h3>'+
+    '<div class="mgrid">'+[0,1,2,3,4,5,6,7,8,9,10,11].map(function(i){
+      var v = P.months[i]; return '<label>'+(i+1)+'월<input inputmode="decimal" value="'+(v?esc(Math.floor(num(v)+1e-9)):'')+'" onchange="setSal('+y+',\''+w+'\','+i+',this.value)"></label>'; }).join('')+'</div>'+
+    '<div class="tiny" style="margin:6px 0 10px">만원 단위 입력 · 입력하면 바로 저장됩니다</div>'+
+    '<div class="btns"><button class="btn" onclick="closeModal()">완료</button></div>');
+}
+function openSalAuto(y, who){
+  var P = salOf(y, who);
+  openModal('<h3>'+esc(nm(who))+' '+y+'년 본봉</h3>'+autoBox(y, who, P)+
+    '<div class="tiny" style="margin:-4px 0 10px">명절휴가비·연가보상비 자동계산</div>'+
+    '<div class="btns"><button class="btn" onclick="closeModal()">완료</button></div>');
+}
+function openSalExtras(y, who){
+  var P = salOf(y, who), w = esc(who), on = autoOn(P);
+  var list = P.extras.map(function(e){ return Object.assign({}, e, {off: on && AUTO_NAME.test(e.name)}); }).concat(autoExtras(y, P));
+  openModal('<h3>'+w+' '+y+'년 기타 수당 및 세금 환급</h3>'+
+    (list.length ? list.sort(function(a,b){ return num(a.month)-num(b.month); }).map(function(e){
+      if(e.auto) return '<div class="row" style="cursor:default"><div class="m"><div class="t">'+esc(e.name)+'<span class="tag">자동계산</span></div><div class="tiny">'+e.month+'월 · '+esc(e.how)+'</div></div><div class="v">'+fm(e.amount)+'</div></div>';
+      return '<div class="row" onclick="editExtra('+y+',\''+w+'\',\''+e.id+'\')" style="'+(e.off?'opacity:.45':'')+'"><div class="m"><div class="t" style="'+(e.off?'text-decoration:line-through':'')+'">'+esc(e.name)+'</div><div class="tiny">'+(e.month?e.month+'월':'')+(e.off?' · 자동 계산으로 대체 (합계에서 뺌)':'')+'</div></div><div class="v">'+fm(Math.floor(num(e.amount)+1e-9))+'</div></div>'; }).join('')
+      : '<div class="empty">성과상여금·연말정산 환급·초과근무수당 등</div>')+
+    '<div class="btns"><button class="btn" onclick="editExtra('+y+',\''+w+'\')">+ 추가</button><button class="btn sub" onclick="closeModal()">닫기</button></div>');
+}
+function autoBox(y, who, P){
+  var c = autoCfg(P, y), a = P.auto || {}, w = esc(who);
+  var f = function(label, k, val, ph){ return '<label>'+label+'<input inputmode="decimal" value="'+(val?esc(val):'')+'" placeholder="'+(ph||'')+'" onchange="setAuto('+y+',\''+w+'\',\''+k+'\',this.value)"></label>'; };
+  return '<div style="margin:0 0 10px"><div class="btns" style="margin:0 0 10px"><button class="btn sub sm" onclick="carryAuto('+y+',\''+w+'\')">내년으로 →</button></div>'+
+    '<div class="mgrid">'+f('본봉 (승급 전)', 'base1', a.base1, '예: 300.5')+f('승급 월', 'step', a.step, '예: 6')+f('본봉 (승급 후)', 'base2', a.base2, '예: 480')+
+      f('연가보상 일수', 'days', a.days, '예: 15')+f('설 지급 월', 'seol', a.seol, String(c.seol))+f('추석 지급 월', 'chuseok', a.chuseok, String(c.chuseok))+'</div>'+
+    '</div>';
+}
+function setAuto(y, who, k, v){
+  var P = salOf(y, who); P.auto = P.auto || {};
+  var s = String(v).trim();
+  P.auto[k] = s === '' ? '' : (k === 'base1' || k === 'base2' ? toMan(s) : num(s));
+  commit();
+}
+// 올해 승급 후 본봉을 내년 승급 전 본봉으로, 승급 월·연가 일수는 그대로
+function carryAuto(y, who){
+  var P = salOf(y, who), a = P.auto || {};
+  if(!num(a.base1)){ alert(y+'년 본봉을 먼저 넣으세요'); return; }
+  var N = salOf(y+1, who); N.auto = Object.assign({}, N.auto || {}, {base1: num(a.base2) || num(a.base1), step: a.step, days: a.days});
+  closeModal(); commit(); SAL_YEAR = y+1; render(); toast((y+1)+'년 승급 전 본봉 '+(num(a.base2)||num(a.base1))+'만 · 승급 후 본봉을 넣으세요');
+}
+function editExtra(y, who, id){
+  var P = salOf(y, who), e = P.extras.find(function(x){ return x.id === id; }) || {};
+  openModal('<h3>'+esc(nm(who))+' '+y+'년 기타 수당 및 세금 환급</h3>'+
+    '<label class="f">이름<input id="f_name" list="exNames" value="'+esc(e.name)+'" placeholder="예: 명절휴가비(설)"></label>'+
+    '<datalist id="exNames"><option>명절휴가비(설)<option>명절휴가비(추석)<option>성과상여금<option>연말정산 환급<option>연가보상비<option>정근수당<option>초과근무수당</datalist>'+
+    '<div class="grid2"><label class="f">받은 달<input id="f_m" type="number" min="1" max="12" inputmode="numeric" value="'+esc(e.month)+'"></label>'+
+    '<label class="f">금액 (만원 또는 원)<input id="f_a" inputmode="decimal" value="'+esc(e.amount)+'"></label></div>'+
+    '<div class="btns"><button class="btn" onclick="saveExtra('+y+',\''+esc(who)+'\',\''+(id||'')+'\')">저장</button><button class="btn sub" onclick="openSalExtras('+y+',\''+esc(who)+'\')">취소</button>'+
+    (id?'<span style="flex:1"></span><button class="btn bad" onclick="delExtra('+y+',\''+esc(who)+'\',\''+id+'\')">삭제</button>':'')+'</div>');
+}
+function saveExtra(y, who, id){
+  var P = salOf(y, who), o = {name:fv('f_name').trim()||'수당', month:fv('f_m'), amount:manFloor(fv('f_a'))};
+  if(id) Object.assign(P.extras.find(function(x){ return x.id === id; }), o); else { o.id = uid(); P.extras.push(o); }
+  commit(); openSalExtras(y, who);
+}
+function delExtra(y, who, id){ if(!confirm('삭제할까요?')) return; var P = salOf(y, who); P.extras = P.extras.filter(function(x){ return x.id !== id; }); commit(); openSalExtras(y, who); }
+function applySaving(v){ if(!confirm('시뮬레이션의 \'그 전 월 저축액\'을 '+fm(v)+'으로 바꿀까요?')) return; S.sim.saveBefore = v; commit(); toast('월 저축액 '+fm(v)+' 반영'); }
+// 급여 항목이 없는 사람에게 연동 항목을 만듦 (끝 월은 가족 정보의 퇴직 월 또는 정년)
+function applySalaryIncome(y){
+  var made = [];
+  S.members.forEach(function(m, k){
+    if(S.incomes.some(function(x){ return isSalary(x) && x.owner === m.name; })) return;
+    var f = S.family.find(function(x){ return x.rel === (k === 0 ? '본인' : '배우자'); });
+    var end = f && f.birth ? idxYm(retireIdx(f)) : '';
+    S.incomes.push({id:uid(), name:'근로소득 (급여 장부)', owner:m.name, kind:'salary', monthly:0, start:'', end:end});
+    made.push(nm(m.name) + (end ? ' ~'+ymDot(end) : ' (끝 월을 지정하세요)'));
+  });
+  if(!made.length) return;
+  commit(); toast('급여 항목 연결: '+made.join(', '));
+}
+
+function viewExpenses(){
+  var now = nowIdx(), cy = Math.floor(now/12), life = ymIdx(S.sim.lifeStart);
+  var total = expenseAt(now);
+  var h = '<div class="card"><h2>월 고정지출<span class="sp"></span><span class="num" style="font-weight:500">'+fm(total)+'</span></h2>';
+  if(!S.expenses.length) h += '<div class="empty">관리비·보험·학원비처럼 매달 나가는 돈. 끝나는 달을 넣으면 은퇴 후 생활비가 자동으로 계산됩니다.</div>';
+  // 분류별 가로 막대 (큰 순서, 누르면 세부 항목)
+  var bc = Object.keys(EXP_CATS).filter(function(c){ return c !== 'saving'; }).map(function(c){
+    return {c:c, v:sum(S.expenses.filter(function(x){ return x.cat === c && expActive(x, now); }), function(x){ return num(x.monthly); })}; })
+    .filter(function(o){ return o.v > 0; }).sort(function(a,b){ return b.v - a.v; });
+  var bmax = bc.length ? bc[0].v : 0;
+  if(bc.length) h += '<div class="hbars">'+bc.map(function(o){
+    return '<div class="hb" onclick="openExpCat(\''+o.c+'\')"><span class="hl">'+EXP_CATS[o.c]+'</span><span class="ht"><i style="width:'+(o.v/bmax*100)+'%;background:'+EXP_COLOR[o.c]+'"></i></span><span class="hv num">'+fm(o.v)+(HIDE?'':' <small>'+Math.round(o.v/total*100)+'%</small>')+'</span></div>'; }).join('')+'</div>';
+  // 큰 항목(분류)만 보여 주고, 누르면 세부 항목을 보고 고침
+  Object.keys(EXP_CATS).forEach(function(c){
+    var list = S.expenses.filter(function(x){ return x.cat === c; });
+    var act = list.filter(function(x){ return expActive(x, now); });
+    var amt = sum(act, function(x){ return num(x.monthly); });
+    var ends = list.map(expEnd).filter(function(v){ return v != null && v >= now; }).sort(function(a,b){ return a-b; });
+    h += '<div class="row" onclick="openExpCat(\''+c+'\')"><div class="m"><div class="t">'+EXP_CATS[c]+'</div>'+
+      '<div class="tiny">'+(list.length ? act.length+'건'+(ends.length?' · '+ymDot(idxYm(ends[0]))+'부터 줄어듦':'') : '없음 · 눌러서 추가')+'</div></div>'+
+      '<div class="v'+(c==='saving'?' tiny':'')+'">'+(list.length ? fm(amt) : '')+' ›</div></div>';
+  });
+  if(S.expenses.length){
+    var pts = [now, (cy+2)*12, (cy+5)*12, life, life != null ? life+24 : null, (cy+15)*12, (cy+20)*12].filter(function(v,i,a){ return v != null && a.indexOf(v) === i; }).sort(function(a,b){ return a-b; });
+    h += '</div><div class="card R"><h2>시기별 예상 월 고정지출</h2><table><tr><th>시기</th><th>금액</th></tr>'+pts.map(function(i){ return '<tr><td style="white-space:normal">'+ymDot(idxYm(i))+(agesAt(i)?'<div class="tiny">'+agesAt(i).replace(/^ · /,'')+'</div>':'')+'</td><td>'+fm(expenseAt(i))+'</td></tr>'; }).join('')+'</table>'+
+      '<div class="tiny" style="margin-top:6px">저축 분류는 합계에서 빠집니다. 이 목록으로 은퇴 후 생활비를 계산하려면 시뮬 탭에서 \'고정지출 목록\'을 고르세요'+(S.sim.spendMode==='expenses'?' (사용 중)':'')+'</div>';
+  }
+  return h + '</div>';
+}
+// 분류 시트: 세부 항목 목록 + 추가
+function openExpCat(c){
+  var now = nowIdx(), list = S.expenses.filter(function(x){ return x.cat === c; });
+  var amt = sum(list.filter(function(x){ return expActive(x, now); }), function(x){ return num(x.monthly); });
+  openModal('<h3>'+EXP_CATS[c]+' <span class="num" style="font-weight:500">'+fm(amt)+'</span></h3>'+
+    (list.length ? list.map(function(x){
+      var on = expActive(x, now);
+      return '<div class="row" onclick="editExpense(\''+x.id+'\')" style="'+(on?'':'opacity:.5')+'"><div class="m"><div class="t">'+esc(x.name)+(x.owner?'<span class="tag">'+esc(nm(x.owner))+'</span>':'')+'</div>'+
+        '<div class="tiny">'+(x.start?ymDot(x.start):'지금')+' ~ '+(expEnd(x)!=null?ymDot(idxYm(expEnd(x))):'계속')+(linkLabel(x)?' · '+linkLabel(x):'')+(x.note?' · '+esc(x.note):'')+'</div></div><div class="v">'+fm(num(x.monthly))+'</div></div>'; }).join('')
+      : '<div class="empty">아직 항목이 없습니다</div>')+
+    '<div class="btns"><button class="btn" onclick="editExpense(\'\',\''+c+'\')">+ '+EXP_CATS[c]+' 항목 추가</button><button class="btn sub" onclick="closeModal()">닫기</button></div>');
+}
+function editExpense(id, cat){
+  var x = S.expenses.find(function(e){ return e.id === id; }) || {cat:cat || 'living'};
+  openModal('<h3>'+(id?'고정지출 수정':'고정지출 추가')+'</h3>'+
+    '<label class="f">이름<input id="f_name" value="'+esc(x.name)+'" placeholder="예: 첫째 수학 학원"></label>'+
+    '<div class="grid2"><label class="f">분류<select id="f_cat">'+Object.keys(EXP_CATS).map(function(c){ return '<option value="'+c+'" '+(c===x.cat?'selected':'')+'>'+EXP_CATS[c]+'</option>'; }).join('')+'</select></label>'+
+    '<label class="f">누구<select id="f_owner">'+ownerOptions(x.owner)+'</select></label></div>'+
+    '<label class="f">월 금액 (만원 또는 원)<input id="f_monthly" inputmode="decimal" value="'+esc(x.monthly)+'"></label>'+
+    '<div class="grid2"><label class="f">시작 (비우면 지금)<input id="f_start" type="month" value="'+esc(x.start)+'"></label>'+
+    '<label class="f">끝 (비우면 계속)<input id="f_end" type="month" value="'+esc(x.end)+'"></label></div>'+
+    '<label class="f">끝 월을 자녀 일정에 연결 (선택)<select id="f_link">'+linkOptions(x.link)+'</select></label>'+
+    '<label class="f">메모<input id="f_note" value="'+esc(x.note)+'" placeholder="예: 고교 졸업까지"></label>'+
+    '<div class="tiny" style="margin:-4px 0 10px">재산세처럼 1년에 몇 번 내는 돈은 연간 합계 ÷ 12로 넣으세요</div>'+
+    '<div class="btns"><button class="btn" onclick="saveExpense(\''+(id||'')+'\')">저장</button><button class="btn sub" onclick="openExpCat(\''+x.cat+'\')">취소</button>'+
+    (id?'<span style="flex:1"></span><button class="btn bad" onclick="delExpense(\''+id+'\')">삭제</button>':'')+'</div>');
+}
+// 저장·삭제 뒤에는 그 분류 목록으로 돌아감
+function saveExpense(id){
+  var o = {name:fv('f_name').trim()||'지출', cat:fv('f_cat'), owner:fv('f_owner'), monthly:toMan(fv('f_monthly')), start:fv('f_start'), end:fv('f_end'), link:fv('f_link'), note:fv('f_note').trim()};
+  if(id) Object.assign(S.expenses.find(function(x){ return x.id === id; }), o); else { o.id = uid(); S.expenses.push(o); }
+  commit(); openExpCat(o.cat);
+}
+function delExpense(id){
+  if(!confirm('삭제할까요?')) return;
+  var x = S.expenses.find(function(e){ return e.id === id; }), c = x ? x.cat : 'living';
+  S.expenses = S.expenses.filter(function(e){ return e.id !== id; }); commit(); openExpCat(c);
+}
+
+/* ════════ 생애 타임라인 ════════ */
+// 자녀 학업·군 일정 (생일로 중·고·대 입학 자동, 재수·휴학·군 복무는 수정 가능)
+function childPlan(f){
+  if(!f.birth) return null;
+  var by = +f.birth.slice(0,4);
+  var mid = ymIdx((by+13)+'-03'), high = ymIdx((by+16)+'-03');
+  var uni = ymIdx(f.uniStart) != null ? ymIdx(f.uniStart) : ymIdx((by+19)+'-03');
+  var years = num(f.uniYears) || 4, leave = num(f.leave) || 0;
+  var army = null;
+  if(f.army !== 'none'){
+    var as = ymIdx(f.armyStart) != null ? ymIdx(f.armyStart) : uni + 12, am = num(f.armyMonths) || 18;
+    army = {from:as, to:as + am - 1};
+  }
+  var stages = [{k:'중', a:mid, b:high-1}, {k:'고', a:high, b:uni-1}];
+  var grad;
+  if(army && army.from > uni && army.from < uni + years*12){
+    var done = army.from - uni, resume = army.to + 1;
+    while(resume % 12 !== 2 && resume % 12 !== 8) resume++;          // 3월·9월 복학
+    grad = resume + years*12 - done + leave - 1;
+    stages.push({k:'대', a:uni, b:army.from-1}, {k:'군', a:army.from, b:army.to}, {k:'대', a:resume, b:grad});
+  } else {
+    grad = uni + years*12 + leave - 1;
+    if(army && army.from <= uni) stages.push({k:'군', a:army.from, b:army.to});
+    stages.push({k:'대', a:uni, b:grad});
+    if(army && army.from > grad) stages.push({k:'군', a:army.from, b:army.to});
+  }
+  return {mid:mid, high:high, uni:uni, highEnd:uni-1, grad:grad, army:army, stages:stages};
+}
+// 고정지출 끝 월 연결: "가족id:high" 또는 "가족id:grad"
+function linkEnd(x){
+  if(!x.link) return null; var p = x.link.split(':'), f = S.family.find(function(m){ return m.id === p[0]; });
+  var c = f && childPlan(f); if(!c) return null; return p[1] === 'high' ? c.highEnd : c.grad;
+}
+function linkLabel(x){
+  if(!x.link) return ''; var p = x.link.split(':'), f = S.family.find(function(m){ return m.id === p[0]; });
+  return f ? esc(famName(f))+' '+(p[1]==='high'?'고교 졸업':'대학 졸업')+' 연동' : '';
+}
+function linkOptions(sel){
+  var o = '<option value="">연결 안 함 (위 끝 월 사용)</option>';
+  S.family.filter(function(f){ return f.rel === '자녀'; }).forEach(function(f){
+    ['high','grad'].forEach(function(k){ var v = f.id+':'+k; o += '<option value="'+v+'" '+(v===sel?'selected':'')+'>'+esc(famName(f))+' '+(k==='high'?'고교 졸업':'대학 졸업')+'</option>'; });
+  });
+  return o;
+}
+// 본인·배우자 ↔ 앱 구성원 이름 (소득 항목 명의)
+function memberOf(f){ return f.rel === '본인' ? (S.members[0]||{}).name : f.rel === '배우자' ? (S.members[1]||{}).name : null; }
+function workIncome(f){ var m = memberOf(f); return S.incomes.find(function(x){ return isSalary(x) && x.owner === m; }); }
+function pensionIncome(f){ var m = memberOf(f); return S.incomes.filter(function(x){ return /연금/.test(x.name) && x.owner === m && x.start; }).sort(function(a,b){ return a.start.localeCompare(b.start); })[0]; }
+function retireIdx(f){
+  var w = workIncome(f); if(w && ymIdx(w.end) != null) return ymIdx(w.end);   // 끝 월이 적혀 있을 때만 (incEnd 와 순환하지 않음)
+  if(ymIdx(f.retire) != null) return ymIdx(f.retire);
+  var p = f.birth.split('-').map(Number), key = memberOf(f);
+  if(key && jobOf(key) === 'public') return (p[0]+60)*12 + (p[1] <= 6 ? 5 : 11);   // 공무원 정년: 60세 되는 해 6월 또는 12월 말
+  return (p[0]+60)*12 + p[1] - 1;                                                    // 그 밖: 만 60세 되는 달
+}
+function timelineLanes(){
+  var lanes = [];
+  S.family.forEach(function(f){
+    if(!f.birth) return;
+    if(f.rel === '본인' || f.rel === '배우자'){
+      var r = retireIdx(f), pi = pensionIncome(f), ps = pi ? ymIdx(pi.start) : null, bars = [];
+      bars.push({k:'재직', a:new Date().getFullYear()*12, b:r, c:'var(--c5)', on:'tlWork(\''+f.id+'\')'});
+      if(ps != null && ps > r + 1) bars.push({k:'공백', a:r+1, b:ps-1, c:'var(--warn)', on:'tlWork(\''+f.id+'\')'});
+      if(ps != null) bars.push({k:'연금', a:ps, b:null, c:'var(--c1)', on:'tlPension(\''+f.id+'\')'});
+      lanes.push({name:famName(f), bars:bars});
+    } else if(f.rel === '자녀'){
+      var c = childPlan(f);
+      lanes.push({name:famName(f), bars:c.stages.map(function(s){ return {k:s.k, a:s.a, b:s.b, c:s.k==='군'?'var(--t2)':'var(--c3)', on:'tlChild(\''+f.id+'\')'}; })});
+    }
+  });
+  return lanes;
+}
+function timelineMarks(){
+  var now = nowIdx(), out = [];
+  S.lumps.forEach(function(l){ var i = ymIdx(l.month); if(!l.repeat && !l.done && i != null && i >= now) out.push({i:i, t:l.name, amt:num(l.amount), on:'editLump(\''+l.id+'\')'}); });
+  S.family.forEach(function(f){ if(f.rel === '자녀' && f.birth){ var p = f.birth.split('-').map(Number), i = (p[0]+19)*12 + p[1] - 1; if(i >= now) out.push({i:i, t:f.name+' 성년 (만 19세)', on:'tlChild(\''+f.id+'\')'}); } });
+  return out.sort(function(a,b){ return a.i - b.i; });
+}
+function viewTimeline(){
+  if(!S.family.some(function(f){ return f.birth && (f.rel === '본인' || f.rel === '배우자' || f.rel === '자녀'); }))
+    return '<div class="card"><h2>생애 타임라인</h2><div class="empty">아래 \'가족 나이\'에 본인·배우자·자녀 생일을 넣으면 재직·연금·학업·군 복무가 연도 축에 그려집니다</div></div>';
+  var lanes = timelineLanes(), marks = timelineMarks();
+  var y0 = new Date().getFullYear(), y1 = y0 + 22, A = y0*12, B = (y1+1)*12;
+  var vw = (document.getElementById('view') || {}).clientWidth || 380;
+  if(isPC()) vw = Math.min((vw - 16) * 2/3, vw - 346);
+  var W = Math.max(340, Math.min(1200, vw - 34)), L = 40, R = 4, PW = W - L - R, top = 52, LH = 30, BH = 22;
+  var X = function(i){ return L + PW * (Math.max(A, Math.min(B, i)) - A) / (B - A); };
+  var Hh = top + lanes.length*LH + 30, g = '';
+  // 가까운 번호는 하나로 묶어 '1–3'처럼 표시, 묶음끼리도 가까우면 두 줄로 엇갈림
+  var groups = [];
+  marks.forEach(function(m, n){ if(m.i > B) return; var x = X(m.i), gr = groups[groups.length-1];
+    if(gr && x - gr.x < 14) gr.to = n+1; else groups.push({x:x, from:n+1, to:n+1, on:m.on}); });
+  var lastX = [-99, -99];
+  groups.forEach(function(gr){
+    var lab = gr.from === gr.to ? String(gr.from) : gr.from+'–'+gr.to, w = Math.max(18, lab.length*7 + 8);
+    var row = gr.x - w/2 - lastX[0] >= 4 ? 0 : 1; lastX[row] = gr.x + w/2;
+    var cy = row ? 33 : 11;
+    g += '<line x1="'+gr.x+'" x2="'+gr.x+'" y1="'+(cy+9)+'" y2="'+(top+lanes.length*LH)+'" stroke="var(--warn)" stroke-width="0.7" stroke-dasharray="2 3" opacity=".7"/>'+
+      '<g style="cursor:pointer" onclick="'+gr.on+'"><rect x="'+(gr.x-w/2)+'" y="'+(cy-9)+'" width="'+w+'" height="18" rx="9" fill="var(--warn)"/><text x="'+gr.x+'" y="'+(cy+4)+'" font-size="11" text-anchor="middle" fill="#1a1205" font-weight="700">'+lab+'</text></g>';
+  });
+  lanes.forEach(function(ln, li){
+    var y = top + li*LH;
+    g += '<text x="0" y="'+(y+BH/2+4.5)+'" font-size="13" fill="var(--t1)" font-family="var(--sans)" font-weight="700">'+esc(ln.name)+'</text>';
+    ln.bars.forEach(function(b){
+      var bEnd = b.b == null ? B : b.b + 1; if(bEnd <= A || b.a >= B) return;
+      var x1 = X(b.a), x2 = X(bEnd), w = Math.max(2, x2 - x1 - 1.5);
+      g += '<g style="cursor:pointer" onclick="'+b.on+'"><rect x="'+x1+'" y="'+y+'" width="'+w+'" height="'+BH+'" rx="4" fill="'+b.c+'"/>'+
+        (w >= (b.k.length > 1 ? 26 : 14) ? '<text x="'+(x1+w/2)+'" y="'+(y+BH/2+4.5)+'" font-size="12" text-anchor="middle" fill="#fff" font-family="var(--sans)" font-weight="700">'+b.k+'</text>' : '')+'</g>';
+    });
+  });
+  var ay = top + lanes.length*LH + 4;
+  g += '<line x1="'+L+'" x2="'+(W-R)+'" y1="'+ay+'" y2="'+ay+'" stroke="var(--bd)"/>';
+  for(var yy = y0; yy <= y1; yy += 4) g += '<text x="'+X(yy*12)+'" y="'+(ay+16)+'" font-size="11" text-anchor="'+(yy===y0?'start':'middle')+'" fill="var(--t2)">\''+String(yy).slice(2)+'</text>';
+  var h = '<div class="card wide"><h2>생애 타임라인<span class="sp"></span><span class="tiny">막대를 눌러 수정</span></h2>'+
+    '<svg viewBox="0 0 '+W+' '+Hh+'" width="100%">'+g+'</svg>'+
+    '<div class="legend"><span><i style="background:var(--c5)"></i>재직</span><span><i style="background:var(--warn)"></i>공백</span><span><i style="background:var(--c1)"></i>연금</span><span><i style="background:var(--c3)"></i>학교</span><span><i style="background:var(--t2)"></i>군</span></div>';
+  if(marks.length) h += '<div style="margin-top:8px">'+marks.map(function(m, n){
+    return '<div class="row" onclick="'+m.on+'"><div style="width:22px;height:22px;border-radius:50%;background:var(--warn);color:#1a1205;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex:none">'+(n+1)+'</div>'+
+      '<div class="m"><div class="t">'+esc(m.t)+'</div><div class="tiny">'+ymDot(idxYm(m.i))+agesAt(m.i)+'</div></div>'+(m.amt!=null?'<div class="v '+(m.amt<0?'neg':'pos')+'">'+(m.amt>=0?'+':'')+fm(m.amt)+'</div>':'')+'</div>'; }).join('')+'</div>';
+  return h + '</div>';
+}
+// 달 입력 + −1년/−1개월/+1개월/+1년
+function monthField(id, label, val){
+  return '<label class="f">'+label+'<input id="'+id+'" type="month" value="'+esc(val||'')+'"></label>'+
+    '<div class="btns" style="margin:-4px 0 12px">'+[[-12,'−1년'],[-1,'−1개월'],[1,'+1개월'],[12,'+1년']].map(function(d){ return '<button class="btn sub sm" onclick="shiftMonth(\''+id+'\','+d[0]+')">'+d[1]+'</button>'; }).join('')+'</div>';
+}
+function shiftMonth(id, d){ var el = document.getElementById(id), i = ymIdx(el.value); if(i == null) i = nowIdx(); el.value = idxYm(i + d); }
+function tlWork(fid){
+  var f = S.family.find(function(x){ return x.id === fid; }), r = idxYm(retireIdx(f));
+  openModal('<h3>'+esc(famName(f))+' 퇴직 시점</h3>'+monthField('f_retire', '재직 마지막 달', r)+
+    '<div class="tiny" style="margin-bottom:10px">근로소득 항목의 끝 월'+(f.rel==='본인'?'과 시뮬레이션의 생활비 시작(다음 달)':'')+'도 함께 바뀝니다. 공백은 퇴직과 연금 개시 사이로 자동 계산됩니다.</div>'+
+    '<div class="btns"><button class="btn" onclick="saveRetire(\''+fid+'\')">저장</button><button class="btn sub" onclick="closeModal()">취소</button></div>');
+}
+function saveRetire(fid){
+  var f = S.family.find(function(x){ return x.id === fid; }), v = fv('f_retire'); if(!v) return;
+  f.retire = v; var w = workIncome(f); if(w) w.end = v;
+  if(f.rel === '본인') S.sim.lifeStart = idxYm(ymIdx(v) + 1);
+  closeModal(); commit(); toast(famName(f)+' 퇴직 '+ymDot(v));
+}
+function tlPension(fid){
+  var f = S.family.find(function(x){ return x.id === fid; }), pi = pensionIncome(f);
+  openModal('<h3>'+esc(famName(f))+' 연금</h3>'+monthField('f_ps', '연금 개시 월', pi ? pi.start : '')+
+    '<label class="f">월 금액 (만원)<input id="f_pm" type="number" inputmode="decimal" value="'+(pi?esc(pi.monthly):'')+'"></label>'+
+    '<div class="btns"><button class="btn" onclick="savePension(\''+fid+'\')">저장</button><button class="btn sub" onclick="closeModal()">취소</button></div>');
+}
+function savePension(fid){
+  var f = S.family.find(function(x){ return x.id === fid; }), pi = pensionIncome(f), s = fv('f_ps'), m = num(fv('f_pm'));
+  if(!s) return;
+  if(pi){ pi.start = s; pi.monthly = m; } else S.incomes.push({id:uid(), name:pensionName(memberOf(f)), owner:memberOf(f), monthly:m, start:s, end:''});
+  closeModal(); commit(); toast(famName(f)+' 연금 '+ymDot(s)+'부터 월 '+fm(m));
+}
+function tlChild(fid){
+  var f = S.family.find(function(x){ return x.id === fid; }), c = childPlan(f), noArmy = f.army === 'none';
+  openModal('<h3>'+esc(famName(f))+' 학업·군 일정</h3>'+
+    '<div class="tiny" style="margin-bottom:10px">중 '+ymDot(idxYm(c.mid))+' · 고 '+ymDot(idxYm(c.high))+' · 고교 졸업 '+ymDot(idxYm(c.highEnd))+' · 대학 졸업 '+ymDot(idxYm(c.grad))+'</div>'+
+    monthField('f_uni', '대학 입학 (재수면 1년 뒤로)', idxYm(c.uni))+
+    '<div class="grid2"><label class="f">대학 학년 수<input id="f_years" type="number" inputmode="numeric" value="'+(num(f.uniYears)||4)+'"></label>'+
+    '<label class="f">휴학 (개월)<input id="f_leave" type="number" inputmode="numeric" value="'+(num(f.leave)||0)+'"></label></div>'+
+    '<label class="chk"><input type="checkbox" id="f_noarmy" '+(noArmy?'checked':'')+'> 군 복무 없음</label>'+
+    monthField('f_army', '입대 월 (기본: 대학 1학년 마치고)', c.army ? idxYm(c.army.from) : idxYm(c.uni + 12))+
+    '<label class="f">복무 기간 (개월)<input id="f_am" type="number" inputmode="numeric" value="'+(num(f.armyMonths)||18)+'"></label>'+
+    '<div class="tiny" style="margin-bottom:10px">전역 뒤 3월·9월에 복학하는 것으로 계산합니다. 고정지출에서 \'끝 월을 자녀 일정에 연결\'한 항목은 졸업 월이 바뀌면 함께 바뀝니다.</div>'+
+    '<div class="btns"><button class="btn" onclick="saveChild(\''+fid+'\')">저장</button><button class="btn sub" onclick="closeModal()">취소</button></div>');
+}
+function saveChild(fid){
+  var f = S.family.find(function(x){ return x.id === fid; });
+  f.uniStart = fv('f_uni'); f.uniYears = num(fv('f_years')) || 4; f.leave = num(fv('f_leave')) || 0;
+  f.army = document.getElementById('f_noarmy').checked ? 'none' : 'manual'; f.armyStart = fv('f_army'); f.armyMonths = num(fv('f_am')) || 18;
+  closeModal(); commit(); var c = childPlan(f); toast(f.name+' 대학 졸업 '+ymDot(idxYm(c.grad)));
+}
+
+/* ════════ 가족 나이 ════════ */
+var REL = ['본인','배우자','자녀','부모','기타'];
+function ageAt(birth, i){   // i 달 말일 기준 만 나이
+  if(!birth) return null; var p = birth.split('-').map(Number); var y = Math.floor(i/12), m = i%12 + 1;
+  return y - p[0] - (m < p[1] ? 1 : 0);
+}
+function agesAt(i){
+  if(i == null || !S.family.length) return '';
+  return ' · ' + S.family.filter(function(f){ return f.rel !== '부모'; }).map(function(f){ return esc(famName(f))+' '+ageAt(f.birth, i); }).join(' ');
+}
+function familyMilestones(){
+  var out = [], now = nowIdx(), end = num(S.sim.endYear)*12 + 11;
+  S.family.forEach(function(f){
+    if(!f.birth) return; var p = f.birth.split('-').map(Number);
+    var at = function(age){ return (p[0]+age)*12 + p[1] - 1; };
+    var add = function(age, text){ var i = at(age); if(i >= now && i <= end) out.push({i:i, text:esc(famName(f))+' 만 '+age+'세 — '+text}); };
+    if(f.rel === '자녀'){ add(19, '성년. 증여재산공제 10년 5,000만 (미성년 때 받은 금액과 합산)'); }
+    if(f.rel === '본인' || f.rel === '배우자'){ add(55, '연금저축·IRP 연금 수령 가능'); add(65, '비과세종합저축 가입 가능 (5,000만 한도)'); add(70, '연금소득세율 5.5% → 4.4%'); }
+  });
+  return out.sort(function(a,b){ return a.i - b.i; });
+}
+function viewFamily(){
+  var h = '<div class="card R"><h2>가족 나이<span class="sp"></span><button class="btn sm" onclick="editFamily()">+ 추가</button></h2>';
+  if(!S.family.length) return h + '<div class="empty">생일을 넣으면 목돈 일정과 지출 표에 그때 나이가 함께 보입니다</div></div>';
+  var now = nowIdx(), cy = Math.floor(now/12), ys = [cy];
+  S.lumps.forEach(function(l){ var i = ymIdx(l.month); if(i != null && !l.repeat) ys.push(Math.floor(i/12)); });
+  S.incomes.forEach(function(x){ [x.start, x.end].forEach(function(v){ var i = ymIdx(v); if(i != null) ys.push(Math.floor(i/12)); }); });
+  ys = ys.filter(function(y,i,a){ return a.indexOf(y) === i && y >= cy && y <= num(S.sim.endYear); }).sort().slice(0, 14);
+  h += '<div class="tblwrap"><table style="font-size:var(--f-xs)"><tr><th>연말</th>'+S.family.map(function(f){ return '<th style="cursor:pointer;text-decoration:underline dotted" onclick="editFamily(\''+f.id+'\')">'+esc(famName(f))+'</th>'; }).join('')+'</tr>'+
+    ys.map(function(y){ return '<tr><td>'+y+'</td>'+S.family.map(function(f){ var a = ageAt(f.birth, y*12+11); return '<td style="cursor:pointer" onclick="editAge(\''+f.id+'\','+y+')">'+(a==null?'':a)+'</td>'; }).join('')+'</tr>'; }).join('')+'</table></div>'+
+    '<div class="tiny" style="margin:6px 0 10px">목돈·소득이 바뀌는 해만 보여 줍니다 (만 나이). 숫자를 누르면 나이를 고칠 수 있고, 이후 연도도 함께 바뀝니다. 이름을 누르면 생일·관계를 고칩니다.</div>';
+  var ms = familyMilestones();
+  if(ms.length) h += '<div class="grp"><span>나이에 따라 생기는 일</span></div>'+ms.slice(0, 8).map(function(m){ return '<div class="row" style="cursor:default"><div class="m"><div class="tiny num">'+ymDot(idxYm(m.i))+'</div><div>'+m.text+'</div></div></div>'; }).join('');
+  h += '<div class="btns">'+S.family.map(function(f){ return '<button class="btn sub sm" onclick="editFamily(\''+f.id+'\')">'+esc(famName(f))+' '+ageAt(f.birth, now)+'세</button>'; }).join('')+'</div>';
+  return h + '</div>';
+}
+// 그해 연말 나이를 고치면 생년이 바뀌어 모든 연도 나이가 함께 바뀜 (생일 월·일은 그대로)
+function editAge(fid, y){
+  var f = S.family.find(function(x){ return x.id === fid; }), a = ageAt(f.birth, y*12+11);
+  openModal('<h3>'+esc(famName(f))+' '+y+'년 연말 나이</h3>'+
+    '<label class="f">만 나이<input id="f_age" type="number" inputmode="numeric" value="'+(a==null?'':a)+'"></label>'+
+    '<div class="btns" style="margin:-4px 0 12px"><button class="btn sub sm" onclick="var e=document.getElementById(\'f_age\');e.value=num(e.value)-1">−1살</button><button class="btn sub sm" onclick="var e=document.getElementById(\'f_age\');e.value=num(e.value)+1">+1살</button></div>'+
+    '<div class="tiny" style="margin-bottom:10px">생일 '+esc(f.birth||'(없음)')+' — 나이를 바꾸면 생년만 바뀌고 이후 모든 연도에 반영됩니다.</div>'+
+    '<div class="btns"><button class="btn" onclick="saveAge(\''+fid+'\','+y+')">저장</button><button class="btn sub" onclick="closeModal()">취소</button><span style="flex:1"></span><button class="btn sub" onclick="editFamily(\''+fid+'\')">생일 직접 수정</button></div>');
+}
+function saveAge(fid, y){
+  var f = S.family.find(function(x){ return x.id === fid; }), age = num(fv('f_age'));
+  var md = f.birth ? f.birth.slice(4) : '-01-01', by = y - age;          // 연말 기준 만 나이 = 그해 − 생년
+  var old = f.birth; f.birth = by + md;
+  closeModal(); commit(); toast(famName(f)+' 생년 '+(old?old.slice(0,4):'-')+' → '+by+' (이후 나이 모두 반영)');
+}
+function saveFamily(id){
+  var name = fv('f_name').trim() || '가족', rel = fv('f_rel');
+  var key = rel === '본인' ? '본인' : rel === '배우자' ? '배우자' : null, m = key && S.members.find(function(x){ return x.name === key; });
+  if(m){
+    var other = S.members.filter(function(x){ return x !== m; }).map(function(x){ return x.nick || x.name; });
+    if(other.indexOf(name) >= 0 || name === '공동'){ alert('다른 구성원과 같은 닉네임입니다'); return; }
+    m.nick = name;
+  }
+  upsertItem('family', id, {name:name, rel:rel, birth:fv('f_birth')});
+}
+function editFamily(id){
+  var f = S.family.find(function(x){ return x.id === id; }) || {rel:'자녀'};
+  openModal('<h3>'+(id?'가족 수정':'가족 추가')+'</h3>'+
+    (f.rel === '본인' || f.rel === '배우자'
+      ? '<label class="f">닉네임 (화면 표시 · 설정의 가족 구성원과 같음)<input id="f_name" value="'+esc(famName(f))+'"></label>'
+      : '<label class="f">이름<input id="f_name" value="'+esc(f.name)+'"></label>')+
+    '<div class="grid2"><label class="f">관계<select id="f_rel">'+REL.map(function(r){ return '<option '+(r===f.rel?'selected':'')+'>'+r+'</option>'; }).join('')+'</select></label>'+
+    '<label class="f">생년월일<input id="f_birth" type="date" value="'+esc(f.birth)+'"></label></div>'+
+    '<div class="btns"><button class="btn" onclick="saveFamily(\''+(id||'')+'\')">저장</button><button class="btn sub" onclick="closeModal()">취소</button>'+
+    (id?'<span style="flex:1"></span><button class="btn bad" onclick="delItem(\'family\',\''+id+'\')">삭제</button>':'')+'</div>');
+}
+
+/* ════════ 배분 (버킷) ════════ */
+function bucketOptions(sel, forLump){
+  var o = forLump ? '<option value="">지정 안 함</option>' : (sel == null ? '<option value="auto" selected>분류에 맞춰 자동</option>' : '') + '<option value="" '+(sel===''?'selected':'')+'>없음 (부동산 등)</option>';
+  return o + Object.keys(BUCKETS).map(function(k){ return '<option value="'+k+'" '+(k===sel?'selected':'')+'>'+BUCKETS[k]+'</option>'; }).join('');
+}
+// 생활비 시작 이후 '소득 < 생활비' 첫 구간 (공백기)
+function gapRun(){
+  var life = ymIdx(S.sim.lifeStart), start = Math.max(nowIdx(), life == null ? nowIdx() : life), end = num(S.sim.endYear)*12 + 11;
+  var run = null;
+  for(var i = start; i <= end; i++){
+    var short = (spendAt(i) || 0) - incomeAt(i);
+    if(short > 0){ if(!run) run = {from:i, to:i, total:0}; run.to = i; run.total += short; }
+    else if(run) break;
+  }
+  if(run) run.endless = run.to === end;
+  return run;
+}
+function bucketTargets(){
+  var run = gapRun();
+  var rT = S.buckets.reserve.target, gT = S.buckets.gap.target;
+  return {
+    reserve: rT != null && rT !== '' ? num(rT) : num(S.sim.spend)*6,
+    reserveAuto: !(rT != null && rT !== ''),
+    gap: gT != null && gT !== '' ? num(gT) : (run && !run.endless ? Math.round(run.total) : 0),
+    gapAuto: !(gT != null && gT !== ''),
+    run: run
+  };
+}
+function viewAlloc(){
+  var bt = bucketTargets(), run = bt.run, cur = {}, planned = {}, now = nowIdx();
+  Object.keys(BUCKETS).forEach(function(k){ cur[k] = 0; planned[k] = []; });
+  byOwner(S.assets).forEach(function(a){ if(a.bucket && cur[a.bucket] != null) cur[a.bucket] += num(a.value); });
+  S.lumps.forEach(function(l){ var i = lumpNext(l, now); if(l.bucket && planned[l.bucket] && i != null && i >= now && (!run || l.bucket !== 'gap' || i < run.from)) planned[l.bucket].push(l); });
+  var fin = cur.reserve + cur.gap + cur.growth;
+  var parts = Object.keys(BUCKETS).map(function(k){ return {n:BUCKETS[k], v:cur[k], c:BUCKET_COLOR[k]}; });
+  var h = ownerChips() + (OWNER ? '<div class="tiny" style="margin:-4px 2px 10px">목적별 예산의 목표 금액은 가계 전체 기준이라 명의별로 보면 부족해 보일 수 있습니다</div>' : '') + '<div class="card R"><h2>목적별 예산 3개</h2>'+donut(parts)+'<div class="tiny" style="margin-top:8px">목적별 예산은 자산 탭에서 자산마다 지정합니다. 부동산은 넣지 않습니다.</div></div>';
+
+  h += kpis([[BUCKETS.reserve, fm(cur.reserve), '', '목표 '+fm(bt.reserve)], [BUCKETS.gap, fm(cur.gap), '', '목표 '+fm(bt.gap)], [BUCKETS.growth, fm(cur.growth), '', fin ? '금융자산의 '+Math.round(cur.growth/fin*100)+'%' : ''], ['금융자산 합계', fm(fin)]]);
+  if(run){
+    h += '<div class="alert">'+(run.endless
+      ? '생활비 시작 뒤로 <b>소득이 생활비보다 계속 적습니다</b>. ② 공백 대비 대신 ③ 장기투자에서 매년 꺼내 쓰는 구조입니다. 생활비를 다시 확인하세요.'
+      : '<b>공백기 '+ymDot(idxYm(run.from))+'~'+ymDot(idxYm(run.to))+'</b> ('+(run.to-run.from+1)+'개월): 월 평균 '+fm(run.total/(run.to-run.from+1))+'씩, 합계 <b>'+fm(run.total)+'</b>이 모자랍니다.')+'</div>';
+  }
+
+  ['reserve','gap','growth'].forEach(function(k){
+    var c = cur[k], pl = sum(planned[k], function(l){ return num(l.amount); });
+    h += '<div class="card"><h2><span style="color:'+BUCKET_COLOR[k]+'">●</span> '+BUCKETS[k]+'<span class="sp"></span>'+(k!=='growth'?'<button class="btn sub sm" onclick="editTarget(\''+k+'\')">목표</button>':'')+'</h2>'+
+      '<div class="tiny" style="margin-bottom:10px">'+BUCKET_DESC[k]+'</div>';
+    if(k === 'growth'){
+      h += '<div class="grid2"><div class="kv"><div class="k">현재</div><div class="v">'+fm(c)+'</div></div><div class="kv"><div class="k">금융자산 중 비중</div><div class="v">'+(fin?Math.round(c/fin*100):0)+'%</div></div></div>';
+    } else {
+      var t = k==='reserve' ? bt.reserve : bt.gap, auto = k==='reserve' ? bt.reserveAuto : bt.gapAuto;
+      var after = c + pl, ok = after >= t, pct = t ? Math.min(100, Math.round(after/t*100)) : 100;
+      h += '<div class="grid2">'+
+        '<div class="kv"><div class="k">목표'+(auto?' (자동)':'')+'</div><div class="v">'+fm(t)+'</div></div>'+
+        '<div class="kv"><div class="k">현재'+(pl?' + 예정':'')+'</div><div class="v">'+fm(c)+(pl?' <span class="tiny">+'+fm(pl)+'</span>':'')+'</div></div></div>'+
+        '<div style="height:8px;background:var(--s3);border-radius:99px;margin:10px 0 6px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:'+(ok?'var(--good)':'var(--warn)')+'"></div></div>'+
+        '<div class="tiny '+(ok?'pos':'wrn')+'">'+(t===0?'목표 없음':ok?'목표 충족'+(after-t>0?' · 여유 '+fm(after-t):''):'부족 '+fm(t-after))+'</div>';
+      if(auto) h += '<div class="tiny" style="margin-top:4px">'+(k==='reserve'?'자동 = 월 생활비 6개월치. 교육비를 더하려면 [목표]에서 직접 입력':'자동 = 현금흐름의 공백기 부족분 합계')+'</div>';
+    }
+    var list = byOwner(S.assets).filter(function(a){ return a.bucket === k; });
+    if(list.length) h += '<div style="margin-top:10px">'+list.map(function(a){ return '<div class="row" onclick="editAsset(\''+a.id+'\')"><div class="m"><div class="t">'+esc(a.name)+(a.owner?'<span class="tag">'+esc(nm(a.owner))+'</span>':'')+'</div></div><div class="v">'+fm(num(a.value))+'</div></div>'; }).join('')+'</div>';
+    if(planned[k].length) h += planned[k].map(function(l){ return '<div class="row" onclick="editLump(\''+l.id+'\')"><div class="m"><div class="t">'+esc(l.name)+'<span class="tag">예정 '+ymDot(l.month)+'</span></div></div><div class="v pos">+'+fm(num(l.amount))+'</div></div>'; }).join('');
+    h += '</div>';
+  });
+
+  // 이동 계획: 공백기 직전 자동 항목 + 직접 입력 항목
+  var items = S.moves.map(function(m){ return {id:m.id, month:m.month, text:m.text, done:m.done}; });
+  if(run && !run.endless) items.push({auto:true, month:idxYm(run.from - 1), text:'② 공백 대비 자금 '+fm(bt.gap)+'을 예금·단기채로 옮기기 ('+ymDot(idxYm(run.from))+'부터 매달 꺼내 씀)'});
+  items.sort(function(a,b){ return (a.month||'').localeCompare(b.month||''); });
+  h += '<div class="card R"><h2>이동 계획<span class="sp"></span><button class="btn sm" onclick="editMove()">+ 추가</button></h2>';
+  if(!items.length) h += '<div class="empty">목적별 예산 사이에서 돈을 옮길 일정을 적어 둡니다</div>';
+  items.forEach(function(m){
+    var i = ymIdx(m.month), soon = !m.done && i != null && i - now <= 12 && i >= now, past = !m.done && i != null && i < now;
+    h += '<div class="chk-item '+(m.done?'done':'')+'">'+(m.auto?'<span style="width:22px;text-align:center" class="tiny">자동</span>':'<input type="checkbox" '+(m.done?'checked':'')+' onchange="toggleMove(\''+m.id+'\')">')+
+      '<div class="tx" '+(m.auto?'':'onclick="editMove(\''+m.id+'\')" style="cursor:pointer"')+'><div class="num tiny '+(past?'neg':soon?'wrn':'')+'">'+ymDot(m.month)+(soon?' · 1년 이내':past?' · 지남':'')+'</div>'+esc(m.text)+'</div></div>';
+  });
+  h += '</div>';
+  return h;
+}
+function editTarget(k){
+  var bt = bucketTargets(), cur = S.buckets[k].target;
+  openModal('<h3>'+BUCKETS[k]+' 목표</h3>'+
+    '<label class="f">목표 금액 (만원, 비우면 자동: '+fm(k==='reserve'?num(S.sim.spend)*6:(bt.run&&!bt.run.endless?bt.run.total:0))+')<input id="f_t" type="number" inputmode="decimal" value="'+(cur==null?'':esc(cur))+'"></label>'+
+    '<div class="btns"><button class="btn" onclick="S.buckets[\''+k+'\'].target=(fv(\'f_t\').trim()===\'\'?null:num(fv(\'f_t\')));closeModal();commit()">저장</button><button class="btn sub" onclick="closeModal()">취소</button></div>');
+}
+function editMove(id){
+  var m = S.moves.find(function(x){ return x.id === id; }) || {};
+  openModal('<h3>'+(id?'이동 계획 수정':'이동 계획 추가')+'</h3>'+
+    '<label class="f">시기<input id="f_month" type="month" value="'+esc(m.month)+'"></label>'+
+    '<label class="f">내용<input id="f_text" value="'+esc(m.text)+'" placeholder="예: 적금 만기 → ③ 장기투자 ETF 매수"></label>'+
+    '<div class="btns"><button class="btn" onclick="upsertItem(\'moves\',\''+(id||'')+'\',{month:fv(\'f_month\'),text:fv(\'f_text\').trim()||\'이동\'})">저장</button><button class="btn sub" onclick="closeModal()">취소</button>'+
+    (id?'<span style="flex:1"></span><button class="btn bad" onclick="delItem(\'moves\',\''+id+'\')">삭제</button>':'')+'</div>');
+}
+function toggleMove(id){ var m = S.moves.find(function(x){ return x.id === id; }); if(m){ m.done = !m.done; commit(); } }
+
+/* ════════ 첫 실행 마법사 ════════ */
+var W = null;
+function wv(id){ var e = document.getElementById(id); return e ? e.value : ''; }
+function wn(id){ return num(wv(id)); }
+function startWizard(){
+  W = {step:0, couple:false, kids:0, me:{job:'company'}, sp:{job:'company'}, children:[], a:{}, e:{}, retSpend:'', rate:4};
+  wizShow();
+}
+function wizSave(){   // 지금 단계 입력값을 W 에 담기
+  var s = W.step;
+  if(s === 1){ W.couple = wv('w_couple') === '2'; W.kids = num(wv('w_kids')); }
+  if(s === 2 || s === 3){
+    var P = s === 2 ? W.me : W.sp;
+    P.nick = wv('w_nick').trim(); P.birth = wv('w_birth'); P.job = wv('w_job'); P.pay = wv('w_pay');
+    P.retire = wv('w_retire'); P.pStart = wv('w_pstart'); P.pAmt = wv('w_pamt');
+  }
+  if(s === 4){ W.children = []; for(var i = 0; i < W.kids; i++) W.children.push({name:wv('w_cn'+i).trim() || ('자녀'+(i+1)), birth:wv('w_cb'+i), army:wv('w_ca'+i)}); }
+  if(s === 5){ ['home','re2','cash','stock','pension','mutual','other','loan','rate','pay'].forEach(function(k){ W.a[k] = wv('w_a_'+k); }); }
+  if(s === 6){ Object.keys(EXP_CATS).forEach(function(k){ if(k !== 'saving') W.e[k] = wv('w_e_'+k); }); W.retSpend = wv('w_rs'); W.rate = wv('w_rate'); }
+}
+function wizGo(d){
+  wizSave();
+  if(W.step === 2 && !W.me.birth){ alert('생년월일을 넣어 주세요 (나이·퇴직·연금 계산에 씁니다)'); return; }
+  if(W.step === 3 && !W.sp.birth){ alert('배우자 생년월일을 넣어 주세요'); return; }
+  var n = W.step + d;
+  if(n === 3 && !W.couple) n += d;
+  if(n === 4 && !W.kids) n += d;
+  if(n === 3 && !W.couple) n += d;
+  W.step = Math.max(0, n);
+  if(W.step > 6){ wizFinish(); return; }
+  wizShow();
+}
+function wf(label, id, val, type, ph, extra){
+  return '<label class="f">'+label+'<input id="'+id+'" '+(type ? 'type="'+type+'"' : '')+(type === 'number' ? ' inputmode="decimal"' : '')+' value="'+esc(val == null ? '' : val)+'" placeholder="'+esc(ph || '')+'" '+(extra || '')+'></label>';
+}
+function wizPerson(P, who){
+  return '<h3>'+who+'</h3>'+
+    '<div class="grid2">'+wf('닉네임 (화면 표시)', 'w_nick', P.nick, '', who === '나' ? '예: 아빠' : '예: 엄마')+wf('생년월일', 'w_birth', P.birth, 'date')+'</div>'+
+    '<label class="f">직업<select id="w_job">'+jobOptions(P.job)+'</select></label>'+
+    wf('월 실수령액 (만원 · 은퇴했으면 0)', 'w_pay', P.pay, 'number', '예: 400')+
+    wf('퇴직 예정 월 (비우면 만 60세 무렵)', 'w_retire', P.retire, 'month')+wf('연금 시작 월 (비우면 공무원은 퇴직 다음 달, 그 밖은 만 65세)', 'w_pstart', P.pStart, 'month')+
+    wf('예상 연금 월액 (만원 · 지금 돈 가치)', 'w_pamt', P.pAmt, 'number', '공단 예상연금 조회 금액')+
+    '<div class="tiny">국민연금은 국민연금공단 \'내 연금 알아보기\', 공무원연금은 공무원연금공단에서 예상액을 볼 수 있습니다</div>';
+}
+function wizShow(){
+  var s = W.step, h = '', dots = '<div class="tiny" style="margin-bottom:10px">'+(s ? s+' / 6 단계' : '')+'</div>';
+  if(s === 0){
+    h = '<h3>라이프플랜 시작하기</h3><div class="muted" style="line-height:1.7">우리 집 자산, 매달 들어오고 나가는 돈, 퇴직·연금 시기를 넣으면<br>· 지금 순자산과 자산 비중<br>· 연도별 소득과 생활비<br>· 은퇴 후 금융자산이 어떻게 변하는지<br>를 한눈에 보여 줍니다.</div>'+
+      '<div class="tiny" style="margin-top:10px">데이터는 이 기기에만 저장됩니다. 5분 정도 걸리고, 모르는 칸은 비워 두고 나중에 고쳐도 됩니다.</div>'+
+      '<div class="btns"><button class="btn" onclick="wizGo(1)">내 장부 시작</button><button class="btn sub" onclick="loadDemo()">예시로 둘러보기</button></div>';
+  } else if(s === 1){
+    h = dots+'<h3>가구</h3><label class="f">구성<select id="w_couple"><option value="1" '+(!W.couple?'selected':'')+'>1인 가구</option><option value="2" '+(W.couple?'selected':'')+'>부부</option></select></label>'+
+      '<label class="f">자녀 수<select id="w_kids">'+[0,1,2,3,4].map(function(n){ return '<option '+(n===W.kids?'selected':'')+'>'+n+'</option>'; }).join('')+'</select></label>';
+  } else if(s === 2){ h = dots + wizPerson(W.me, '나');
+  } else if(s === 3){ h = dots + wizPerson(W.sp, '배우자');
+  } else if(s === 4){
+    h = dots+'<h3>자녀</h3>'+W.children.concat(Array(Math.max(0, W.kids - W.children.length)).fill({})).slice(0, W.kids).map(function(c, i){
+      return '<div class="grid2">'+wf('이름', 'w_cn'+i, c.name, '', '자녀'+(i+1))+wf('생년월일', 'w_cb'+i, c.birth, 'date')+'</div>'+
+        '<label class="f">군 복무<select id="w_ca'+i+'"><option value="none" '+(c.army!==''?'selected':'')+'>없음</option><option value="" '+(c.army===''?'selected':'')+'>있음 (대학 1학년 뒤 18개월)</option></select></label>'; }).join('')+
+      '<div class="tiny">입학·졸업·성년 시기가 생애 타임라인에 표시되고, 학원비 같은 지출을 졸업 때 끝나게 연결할 수 있습니다</div>';
+  } else if(s === 5){
+    var A = W.a;
+    h = dots+'<h3>자산 · 부채 (만원)</h3><div class="grid2">'+
+      wf('사는 집 (시세)', 'w_a_home', A.home, 'number')+wf('그 밖의 부동산', 'w_a_re2', A.re2, 'number')+
+      wf('현금·예금', 'w_a_cash', A.cash, 'number')+wf('주식·펀드·ETF', 'w_a_stock', A.stock, 'number')+
+      wf('연금계좌 (연금저축·IRP)', 'w_a_pension', A.pension, 'number')+wf('적금·저축성 보험', 'w_a_mutual', A.mutual, 'number')+
+      wf('기타 자산', 'w_a_other', A.other, 'number')+'</div>'+
+      '<h3 style="margin-top:6px">대출</h3><div class="grid2">'+wf('대출 잔액', 'w_a_loan', A.loan, 'number')+wf('금리 %', 'w_a_rate', A.rate, 'number', '예: 4.2')+'</div>'+
+      wf('월 상환액 (이자 포함)', 'w_a_pay', A.pay, 'number')+
+      '<div class="tiny">전세보증금처럼 돌려줄 돈도 대출에 넣으세요 (월 상환 0)</div>';
+  } else if(s === 6){
+    var E = W.e;
+    h = dots+'<h3>매달 나가는 돈 (만원)</h3><div class="grid2">'+
+      Object.keys(EXP_CATS).filter(function(k){ return k !== 'saving'; }).map(function(k){ return wf(EXP_CATS[k], 'w_e_'+k, E[k], 'number'); }).join('')+'</div>'+
+      '<h3 style="margin-top:6px">은퇴 후</h3>'+wf('은퇴 후 월 생활비 (지금 돈 가치)', 'w_rs', W.retSpend, 'number', '예: 300')+
+      wf('예상 수익률 % (물가를 뺀 실질)', 'w_rate', W.rate, 'number')+
+      '<div class="tiny">실질 수익률은 보수적으로 2~4%를 권합니다. 언제든 시뮬 탭에서 바꿀 수 있습니다</div>';
+  }
+  if(s > 0) h += '<div class="btns"><button class="btn sub" onclick="wizGo(-1)">이전</button><span style="flex:1"></span><button class="btn" onclick="wizGo(1)">'+(s === 6 ? '완료' : '다음')+'</button></div>';
+  openModal(h);
+}
+function addMonths(ym, n){ var i = ymIdx(ym); return i == null ? '' : idxYm(i + n); }
+function birthYm(b, age){ if(!b) return ''; var p = b.split('-').map(Number); return idxYm((p[0] + age)*12 + p[1] - 1); }
+function wizFinish(){
+  var d = defaultData(), now = thisMonth();
+  var people = [['본인', W.me]].concat(W.couple ? [['배우자', W.sp]] : []);
+  d.members = people.map(function(x){ return {name:x[0], nick:x[1].nick || '', job:x[1].job || 'company'}; });
+  S = normalize(d);
+  people.forEach(function(x){
+    var key = x[0], P = x[1];
+    S.family.push({id:uid(), name:P.nick || key, rel:key, birth:P.birth || '', retire:P.retire || ''});
+    if(num(P.pay) > 0) S.incomes.push({id:uid(), name:'근로소득 (실수령)', kind:'salary', owner:key, monthly:num(P.pay), start:'', end:P.retire || ''});
+    if(num(P.pAmt) > 0){
+      var f = S.family[S.family.length - 1], ret = idxYm(retireIdx(f));
+      var ps = P.pStart || (P.job === 'public' ? addMonths(ret, 1) : birthYm(P.birth, 65));
+      S.incomes.push({id:uid(), name:pensionName(key), owner:key, monthly:num(P.pAmt), start:ps, end:''});
+    }
+  });
+  W.children.forEach(function(c){ S.family.push({id:uid(), name:c.name, rel:'자녀', birth:c.birth || '', army:c.army == null ? 'none' : c.army}); });
+  var A = W.a, add = function(v, cat, name, owner){ if(num(v) > 0) S.assets.push({id:uid(), name:name, cat:cat, owner:owner || '공동', value:num(v), note:'', bucket:cat === 'cash' ? 'reserve' : (cat === 'realestate' ? '' : null)}); };
+  add(A.home, 'realestate', '사는 집'); add(A.re2, 'realestate', '그 밖의 부동산'); add(A.cash, 'cash', '현금·예금');
+  add(A.stock, 'stock', '주식·펀드'); add(A.pension, 'pension', '연금계좌', '본인'); add(A.mutual, 'mutual', '적금·저축성'); add(A.other, 'other', '기타 자산');
+  if(num(A.loan) > 0) S.debts.push({id:uid(), name:'대출', owner:'공동', value:num(A.loan), rate:A.rate || '', pay:A.pay || '', start:'', end:'', note:''});
+  Object.keys(W.e).forEach(function(k){ if(num(W.e[k]) > 0) S.expenses.push({id:uid(), cat:k, name:EXP_CATS[k], owner:'', monthly:num(W.e[k]), start:'', end:'', note:''}); });
+  // 시뮬레이션: 내 퇴직 다음 달부터 은퇴 생활비
+  var meF = S.family.find(function(f){ return f.rel === '본인'; });
+  S.sim.lifeStart = meF && meF.birth ? addMonths(idxYm(retireIdx(meF)), 1) : '';
+  if(num(W.retSpend) > 0) S.sim.spend = num(W.retSpend);
+  S.sim.rate = W.rate === '' ? 4 : num(W.rate);
+  if(meF && meF.birth) S.sim.endYear = Number(meF.birth.slice(0,4)) + 95;
+  var exp = Object.keys(W.e).reduce(function(s, k){ return s + num(W.e[k]); }, 0);
+  S.sim.saveBefore = Math.round(people.reduce(function(s, x){ return s + num(x[1].pay); }, 0) - exp - num(A.pay));
+  delete S.demo; W = null;
+  localStorage.setItem(LS_DATA, JSON.stringify(S));
+  closeModal(); commit(); go('dash'); toast('장부를 만들었습니다 · 각 탭에서 더 자세히 고칠 수 있습니다');
+}
+/* ── 예시 가구 (가상) ── */
+function loadDemo(){
+  var y = new Date().getFullYear();
+  W = {step:7, couple:true, kids:2,
+    me:{nick:'민수', birth:(y-48)+'-03-15', job:'company', pay:'520', retire:'', pStart:'', pAmt:'150'},
+    sp:{nick:'지영', birth:(y-45)+'-08-02', job:'public', pay:'380', retire:'', pStart:'', pAmt:'220'},
+    children:[{name:'하늘', birth:(y-15)+'-05-10', army:'none'}, {name:'바다', birth:(y-12)+'-11-20', army:''}],
+    a:{home:'90000', re2:'', cash:'4000', stock:'15000', pension:'8000', mutual:'3000', other:'', loan:'25000', rate:'4.0', pay:'150'},
+    e:{living:'280', insurance:'60', edu:'120', house:'45', tax:'10', allowance:'90', family:'40', etc:'20'}, retSpend:'350', rate:'3'};
+  wizFinish();
+  S.demo = true; S.lumps.push({id:uid(), name:'하늘 대학 등록금', amount:-1600, month:(y+4)+'-03', repeat:true, until:(y+7)+'-03', note:'연 4회분 합산'});
+  commit(); toast('예시 가구입니다 · 설정에서 \'장부 지우기\'로 내 장부를 시작하세요');
+}
+function backupNote(){
+  if(S.demo) return '<div class="alert">예시 가구를 보고 있습니다. <button class="btn sm" onclick="resetAll()">지우고 내 장부 시작</button></div>';
+  if(!S.assets.length && !S.incomes.length) return '';
+  var last = META.lastBackup ? Date.parse(META.lastBackup) : 0;
+  if(last && Date.now() - last < 30*864e5) return '';
+  return '<div class="alert">'+(last ? '마지막 백업 후 30일이 지났습니다.' : '아직 백업 파일이 없습니다.')+' 장부는 이 기기에만 있으니 가끔 백업해 두세요. <button class="btn sm" onclick="exportData();render()">백업 파일 저장</button></div>';
+}
+function askPersist(){
+  if(META.persistAsked || !(navigator.storage && navigator.storage.persist)) return;
+  META.persistAsked = true;
+  navigator.storage.persist().then(function(ok){ META.persist = !!ok; saveMeta(); }).catch(function(){});
+}
+
+/* ════════ 시작 ════════ */
+document.documentElement.dataset.theme = localStorage.getItem('lp_theme') || 'dark';
+if(document.documentElement.dataset.theme === 'light') document.querySelector('meta[name=theme-color]').content = '#EEF3FB';
+history.replaceState({tab:TAB}, '', '#'+TAB);
+render();
+setCloud('off');
+if(!S.assets.length && !S.incomes.length && !S.family.length) startWizard();
+if(sb){
+  sb.auth.onAuthStateChange(function(ev, session){
+    var u = session ? session.user : null;
+    var changed = (u && u.id) !== (_user && _user.id);
+    _user = u;
+    if(!u){ setCloud('off'); return; }
+    if(changed) setTimeout(function(){ cloudPull(); }, 0);   // 콜백 안에서 바로 호출하면 멈출 수 있어 다음 틱으로
+  });
+  document.addEventListener('visibilitychange', function(){ if(document.visibilityState === 'visible' && _user) cloudPull(); });
+}
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function(){});
+</script>
+</body>
+</html>
