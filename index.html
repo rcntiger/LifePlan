@@ -156,7 +156,8 @@ svg text{font-family:var(--mono)}
   .lay>.colL>.chips,.lay>.colL>.tiny{margin-bottom:12px}
   .g-sim{display:grid;grid-template-columns:380px minmax(0,1fr);gap:16px;align-items:start}
   .simL{position:sticky;top:80px} .simL>.card,.simR>.card{margin:0 0 16px}
-  .g-todo{max-width:760px;margin:0 auto}
+  .g-todo,.g-fam{max-width:1000px;margin:0 auto}
+  .g-fam .card{margin-bottom:16px}
   .g-dash .lay{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .dnut-big{gap:28px!important;justify-content:center;padding:10px 0}
   .dnut-big svg{width:260px;height:260px}
@@ -194,7 +195,7 @@ var TABS = [
   {id:'fam', name:'가족', ic:'⌂'},
   {id:'assets', name:'자산', ic:'▤'},
   {id:'alloc', name:'예산', ic:'◫'},
-  {id:'money', name:'자금관리', ic:'⇄'},
+  {id:'money', name:'자금흐름', ic:'⇄'},
   {id:'sim', name:'시뮬', ic:'↗'},
   {id:'todo', name:'할 일', ic:'✓'}
 ];
@@ -225,7 +226,7 @@ var S = loadLocal();
 var SNAPS = loadSnaps();           // { 'YYYY-MM': {net_worth,total_assets,total_debts,breakdown} }
 var META = loadMeta();             // { base: 서버 updated_at, dirty: bool }
 var TAB = localStorage.getItem('lp_tab') || 'dash';
-var MSUB = localStorage.getItem('lp_msub') || 'in';    // 자금관리 탭 칩: in 수입 / out 지출 / flow 흐름
+var MSUB = localStorage.getItem('lp_msub') || 'in';    // 자금흐름 탭 칩: in 수입 / out 지출 / flow 흐름
 if(TAB === 'flow'){ TAB = 'money'; MSUB = 'flow'; }     // 예전 현금흐름 탭
 var HIDE = localStorage.getItem('lp_hide') === '1';     // 금액 숨김
 var OWNER = localStorage.getItem('lp_owner') || '';     // 명의 필터 ('' = 전체)
@@ -313,7 +314,7 @@ function totals(all){
   var fin = sum(A.filter(function(a){ return FIN_CATS.indexOf(a.cat) >= 0; }), function(a){ return num(a.value); });
   return {assets:assets, debts:debts, net:assets-debts, byCat:byCat, fin:fin};
 }
-// 급여 항목: 자금관리 탭 급여 장부와 연동 (그달 실제 입력값 → 없으면 가장 최근 연도 월 환산)
+// 급여 항목: 자금흐름 탭 급여 장부와 연동 (그달 실제 입력값 → 없으면 가장 최근 연도 월 환산)
 function isSalary(x){ return x.kind === 'salary'; }
 function ledgerMonthly(who, i, avgOnly){   // avgOnly: 그달 실수령 대신 월 환산(기간 대표값)
   var y = Math.floor(i/12), m = i%12, P = (S.salary[y] || {})[who];
@@ -516,7 +517,7 @@ function render(){
 function isPC(){ return window.innerWidth >= 1024; }
 // PC: 요약 타일·명의 칩·안내는 위, .R 카드는 오른쪽 열, 나머지는 왼쪽 열에 위아래로 쌓음
 function pcLayout(v){
-  if(!isPC() || TAB === 'sim' || TAB === 'todo') return;
+  if(!isPC() || TAB === 'sim' || TAB === 'todo' || TAB === 'fam') return;
   var box = v.firstChild, kids = [].slice.call(box.children);
   var lay = document.createElement('div'), L = document.createElement('div'), R = document.createElement('div');
   lay.className = 'lay'; L.className = 'colL'; R.className = 'colR';
@@ -651,8 +652,8 @@ function viewDash(){
     '<tr><td>소득</td><td>'+fm(inc)+'</td></tr><tr><td>월 고정지출</td><td class="neg">−'+fm(ex0)+'</td></tr>'+
     (dc0 ? '<tr><td>대출 이자·상환</td><td class="neg">−'+fm(dc0)+'</td></tr>' : '')+
     '<tr><th style="text-align:left">남는 돈</th><th class="'+(cap0<0?'neg':'pos')+'">'+fm(cap0)+'</th></tr></table>'+
-    '<div class="btns"><button class="btn sub sm" onclick="goMoney(\'flow\')">자금관리 보기</button></div></div>';
-  h += '<div class="card pc R"><h2>다가오는 목돈<span class="sp"></span><button class="btn sub sm" onclick="goMoney(\'out\')">전체</button></h2>'+
+    '<div class="btns"><button class="btn sub sm" onclick="goMoney(\'flow\')">자금흐름 보기</button></div></div>';
+  h += '<div class="card pc R"><h2>다가오는 목돈<span class="sp"></span><button class="btn sub sm" onclick="goFam(\'tl\')">전체</button></h2>'+
     (up.length ? up.map(function(o){ var a = num(o.l.amount); return '<div class="row" onclick="editLump(\''+o.l.id+'\')"><div class="m"><div class="t">'+esc(o.l.name)+'</div><div class="tiny">'+ymDot(idxYm(o.i))+'</div></div><div class="v '+(a<0?'neg':'pos')+'">'+(a>=0?'+':'')+fm(a)+'</div></div>'; }).join('') : '<div class="empty">예정된 목돈이 없습니다</div>')+'</div>';
   h += '<div class="card R"><h2>순자산 추이<span class="sp"></span><button class="btn sm '+(saved?'sub':'')+'" onclick="saveSnapshot()">'+(saved?'이번 달 다시 기록':'이번 달 기록')+'</button></h2>'+
     lineChart(pts, {zero:false, empty:'매달 한 번 [이번 달 기록]을 누르면 추이가 쌓입니다'})+
@@ -721,6 +722,8 @@ function flowCards(){
   h += '</table><div class="tiny" style="margin-top:6px">* 생활비 시작('+ymDot(S.sim.lifeStart)+') 전 생활비는 월 고정지출 합계(참고용)입니다. 시뮬레이션은 이 기간에 \'그 전 월 저축액\'을 씁니다. 생활비에는 대출 이자·상환액이 포함됩니다. 소득은 가계에 포함한 사람만 더합니다'+(S.sim.spendMode==='expenses'?' · 고정지출 목록 기준':'')+'</div></div>';
   return h;
 }
+function periodCard(){ var f = flowCards(), k = f.indexOf('<div class="card R"><h2>기간별 월 소득'); return f.slice(k); }
+function retireCard(){ var f = flowCards(), k = f.indexOf('<div class="card R"><h2>기간별 월 소득'); return f.slice(0, k); }
 // 수입: 월 소득 항목 (명의별, 사이가 비면 '공백' 줄)
 function incomeCard(){
   var h = '<div class="card R"><h2>시기별 월 소득</h2>';
@@ -781,7 +784,7 @@ function viewSim(){
   h += '<div class="card"><h2>생활비 계산 방식</h2><div class="chips" style="margin:0">'+
     '<button class="chip '+(s.spendMode!=='expenses'?'on':'')+'" onclick="setSim(\'spendMode\',\'manual\',\'month\')">직접 입력 (기본 + 구간)</button>'+
     '<button class="chip '+(s.spendMode==='expenses'?'on':'')+'" onclick="setSim(\'spendMode\',\'expenses\',\'month\')">고정지출 목록</button></div>'+
-    (s.spendMode==='expenses' ? '<div class="tiny" style="margin-top:8px">자금관리 탭 지출의 고정지출(종료 시점 반영) 합계를 월 생활비로 씁니다. 지금 '+fm(expenseAt(nowIdx()))+' → 생활비 시작 시 '+fm(expenseAt(ymIdx(s.lifeStart)||nowIdx()))+'</div>' : '')+'</div>';
+    (s.spendMode==='expenses' ? '<div class="tiny" style="margin-top:8px">자금흐름 탭 지출의 고정지출(종료 시점 반영) 합계를 월 생활비로 씁니다. 지금 '+fm(expenseAt(nowIdx()))+' → 생활비 시작 시 '+fm(expenseAt(ymIdx(s.lifeStart)||nowIdx()))+'</div>' : '')+'</div>';
   if(s.spendMode !== 'expenses') h += '<div class="card"><h2>기간별 생활비<span class="sp"></span><button class="btn sm" onclick="editPhase()">+ 구간</button></h2>'+
     '<div class="row" style="cursor:default"><div class="m"><div class="t">'+ymDot(s.lifeStart)+'부터</div><div class="tiny">기본 월 생활비</div></div><div class="v">월 '+fm(num(s.spend))+'</div></div>'+
     ph.map(function(p){ return '<div class="row" onclick="editPhase(\''+p.id+'\')"><div class="m"><div class="t">'+ymDot(p.from)+'부터</div>'+(p.note?'<div class="tiny">'+esc(p.note)+'</div>':'')+'</div><div class="v">월 '+fm(num(p.monthly))+'</div></div>'; }).join('')+
@@ -917,7 +920,7 @@ function editIncome(id, owner){
   openModal('<h3>'+(id?'월 소득 수정':'월 소득 추가')+'</h3>'+
     '<label class="f">이름<input id="f_name" value="'+esc(x.name)+'" placeholder="예: 공무원연금"></label>'+
     '<label class="f">누구<select id="f_owner">'+ownerOptions(x.owner)+'</select></label>'+
-    '<label class="chk"><input type="checkbox" id="f_sal" '+(isSalary(x)?'checked':'')+'> 자금관리 탭 급여 장부와 연동 (근로소득)</label>'+
+    '<label class="chk"><input type="checkbox" id="f_sal" '+(isSalary(x)?'checked':'')+'> 자금흐름 탭 급여 장부와 연동 (근로소득)</label>'+
     '<label class="f">월 금액 (만원, 세후'+(isSalary(x)?' · 급여 장부가 비어 있을 때만 사용':'')+')<input id="f_monthly" type="number" inputmode="decimal" value="'+esc(x.monthly)+'"></label>'+
     '<div class="grid2"><label class="f">시작 (비우면 지금)<input id="f_start" type="month" value="'+esc(x.start)+'"></label>'+
     '<label class="f">끝 (비우면 계속)<input id="f_end" type="month" value="'+esc(x.end)+'"></label></div>'+
@@ -1316,7 +1319,7 @@ async function runMonthly(){
   await cloudPull();
 }
 
-/* ════════ 자금관리: 급여 장부 + 고정지출 ════════ */
+/* ════════ 자금흐름: 급여 장부 + 고정지출 ════════ */
 var SAL_YEAR = new Date().getFullYear();
 // 원 단위로 넣어도 만원으로 바꿈 (10만 이상이면 원으로 봄)
 function toMan(v){ var n = num(v); return Math.abs(n) >= 100000 ? Math.round(n/100)/100 : n; }
@@ -1353,7 +1356,16 @@ function salStat(y, who){
   return {n:ms.length, avg:avg, regular:sum(ms), extras:ex, annual:avg*12 + ex, monthly:avg + ex/12};
 }
 function salYears(){ var ys = Object.keys(S.salary).map(Number).filter(function(y){ return liveMembers().some(function(m){ return salStat(y, m.name); }); }); return ys.sort(); }
-// 자금관리 탭: 맨 위 이번 달 숫자 + 칩(수입·지출·흐름)
+// 자금흐름 탭: 맨 위 이번 달 숫자 + 칩(수입·지출·흐름)
+var FSUB = localStorage.getItem('lp_fsub') || 'mem';   // 가족 탭 칩
+function setFsub(s){ FSUB = s; localStorage.setItem('lp_fsub', s); render(); window.scrollTo(0,0); }
+function goFam(s){ FSUB = s; localStorage.setItem('lp_fsub', s); go('fam'); }
+// 시기별 월 소득: 기간 합계 표 + 명의별 항목을 한 카드로
+function periodIncomeCard(){
+  var a = periodCard().replace(/<\/div>\s*$/, '').replace('<div class="card R"><h2>기간별 월 소득', '<div class="card"><h2>시기별 월 소득');
+  var b = incomeCard().replace('<div class="card R"><h2>시기별 월 소득</h2>', '');
+  return a + '<div class="grp big" style="margin-top:16px"><span>항목</span></div>' + b;
+}
 function setMsub(s){ MSUB = s; localStorage.setItem('lp_msub', s); render(); window.scrollTo(0,0); }
 function goMoney(s){ MSUB = s; localStorage.setItem('lp_msub', s); go('money'); }
 function viewMoney(){
@@ -1363,10 +1375,10 @@ function viewMoney(){
     '<div class="kv"><div class="k">가계 월 소득</div><div class="v">'+fm(mi.v)+'</div><div class="tiny">'+mi.src+'</div></div>'+
     '<div class="kv"><div class="k">월 고정지출</div><div class="v neg">'+fm(exp)+'</div>'+(dc?'<div class="tiny">대출 '+fm(dc)+' 별도</div>':'')+'</div></div>'+
     '<div class="kv" style="margin-top:8px"><div class="k">월 저축 여력 (이번 달)</div><div class="v '+(cap<0?'neg':'pos')+'">'+fm(cap)+'</div></div></div>';
-  h += '<div class="chips">'+[['in','수입'],['out','지출'],['flow','흐름']].map(function(c){ return '<button class="chip '+(MSUB===c[0]?'on':'')+'" onclick="setMsub(\''+c[0]+'\')">'+c[1]+'</button>'; }).join('')+'</div>';
-  if(MSUB === 'out') h += viewExpenses() + lumpCard();
-  else if(MSUB === 'flow') h += savingCard() + flowCards() + expTimeCard();
-  else h += salaryCards() + incomeCard();
+  h += '<div class="chips">'+[['in','수입'],['out','지출'],['flow','시기별']].map(function(c){ return '<button class="chip '+(MSUB===c[0]?'on':'')+'" onclick="setMsub(\''+c[0]+'\')">'+c[1]+'</button>'; }).join('')+'</div>';
+  if(MSUB === 'out') h += viewExpenses();
+  else if(MSUB === 'flow') h += retireCard() + periodIncomeCard() + expTimeCard();
+  else h += salaryCards() + savingCard();
   return h;
 }
 // 수입: 연도별 급여 장부 (소득 있는 구성원마다)
@@ -1523,7 +1535,7 @@ function viewExpenses(){
   });
   return h + '</div>';
 }
-// 시기별 예상 월 고정지출 (자금관리 → 흐름)
+// 시기별 예상 월 고정지출 (자금흐름 → 흐름)
 function expTimeCard(){
   var now = nowIdx(), cy = Math.floor(now/12), life = ymIdx(S.sim.lifeStart), h = '';
   if(S.expenses.length){
@@ -1694,13 +1706,33 @@ function timelineMarks(){
   });
   return out.sort(function(a,b){ return a.i - b.i; });
 }
+var SHOW_PAST = false;
+function lumpRow(x){
+  var a = num(x.amount);
+  return '<div class="row" onclick="editLump(\''+x.id+'\')" style="'+(x.done?'opacity:.55':'')+'"><div class="m"><div class="t">'+esc(x.name)+(x.done?'<span class="tag">완료</span>':'')+
+    ' <span class="tiny">('+(x.repeat ? '매년 '+(+String(x.month).slice(5))+'월'+(x.until ? ' ~'+String(x.until).slice(0,4) : '') : ymDot(x.month))+')</span></div></div>'+
+    '<div class="v '+(a<0?'neg':'pos')+'">'+(a>=0?'+':'')+fm(a)+'</div></div>';
+}
+// 목돈: 타임라인 번호 목록에 없는 반복 목돈 · 지난·완료 목돈 (allFuture: 타임라인이 없을 때 앞으로의 1회성도 보여 줌)
+function lumpExtras(allFuture){
+  var now = nowIdx(), h = '';
+  var past = function(x){ var i = ymIdx(x.month), u = ymIdx(x.until); return x.done || (!x.repeat && i != null && i < now) || (x.repeat && u != null && u < now); };
+  if(allFuture){ var fut = S.lumps.filter(function(x){ return !x.repeat && !past(x); }).sort(function(a,b){ return (a.month||'').localeCompare(b.month||''); });
+    if(fut.length) h += fut.map(lumpRow).join(''); }
+  var rp = S.lumps.filter(function(x){ return x.repeat && !past(x); });
+  if(rp.length) h += '<div class="grp" style="margin-top:12px"><span>매년 반복 목돈</span></div>'+rp.map(lumpRow).join('');
+  var ps = S.lumps.filter(past).sort(function(a,b){ return (b.month||'').localeCompare(a.month||''); });
+  if(ps.length) h += '<div class="btns"><button class="btn sub sm" onclick="SHOW_PAST=!SHOW_PAST;render()">'+(SHOW_PAST ? '지난·완료 목돈 접기' : '지난·완료 목돈 '+ps.length+'건 보기')+'</button></div>'+(SHOW_PAST ? ps.map(lumpRow).join('') : '');
+  return h;
+}
 function viewTimeline(){
   var lanes = timelineLanes(), marks = timelineMarks();
   if(!lanes.length)
-    return '<div class="card"><h2>생애 타임라인</h2><div class="empty">구성원에 생년월일을 넣으면 재직·연금·학업·군 복무·부양이 연도 축에 그려집니다</div></div>';
+    return '<div class="card"><h2>생애 타임라인<span class="sp"></span><button class="btn sm" onclick="editLump()">+ 목돈</button></h2>'+lumpExtras(true)+'<div class="empty">구성원에 생년월일을 넣으면 재직·연금·학업·군 복무·부양이 연도 축에 그려집니다</div></div>';
   var y0 = new Date().getFullYear(), y1 = y0 + 22, A = y0*12, B = (y1+1)*12;
   var vw = (document.getElementById('view') || {}).clientWidth || 380;
-  if(isPC()) vw = Math.min((vw - 16) * 2/3, vw - 346);
+  if(isPC() && TAB !== 'fam') vw = Math.min((vw - 16) * 2/3, vw - 346);
+  if(isPC() && TAB === 'fam') vw = Math.min(vw, 1000);
   var W = Math.max(340, Math.min(1200, vw - 34)), L = Math.max(40, Math.min(64, 6 + 13 * Math.max.apply(null, lanes.map(function(l){ return l.name.length; })))), R = 4, PW = W - L - R, top = 52, LH = 30, BH = 22;
   var X = function(i){ return L + PW * (Math.max(A, Math.min(B, i)) - A) / (B - A); };
   var Hh = top + lanes.length*LH + 30, g = '';
@@ -1730,12 +1762,13 @@ function viewTimeline(){
   var ay = top + lanes.length*LH + 4;
   g += '<line x1="'+L+'" x2="'+(W-R)+'" y1="'+ay+'" y2="'+ay+'" stroke="var(--bd)"/>';
   for(var yy = y0; yy <= y1; yy += 4) g += '<text x="'+X(yy*12)+'" y="'+(ay+16)+'" font-size="11" text-anchor="'+(yy===y0?'start':'middle')+'" fill="var(--t2)">\''+String(yy).slice(2)+'</text>';
-  var h = '<div class="card wide"><h2>생애 타임라인<span class="sp"></span><span class="tiny">막대를 눌러 수정</span></h2>'+
+  var h = '<div class="card wide"><h2>생애 타임라인<span class="sp"></span><button class="btn sm" onclick="editLump()">+ 목돈</button></h2><div class="tiny" style="margin:-4px 0 4px">막대·목록을 눌러 수정</div>'+
     '<svg viewBox="0 0 '+W+' '+Hh+'" width="100%">'+g+'</svg>'+
     '<div class="legend"><span><i style="background:var(--c5)"></i>재직</span><span><i style="background:var(--warn)"></i>공백</span><span><i style="background:var(--c1)"></i>연금</span><span><i style="background:var(--c3)"></i>학교</span><span><i style="background:var(--t2)"></i>군</span>'+(lanes.some(function(l){ return l.bars.some(function(b){ return b.thin; }); }) ? '<span><i style="background:var(--c4)"></i>부양비 (아래 띠)</span>' : '')+(lanes.some(function(l){ return l.bars.some(function(b){ return b.dim; }); }) ? '<span>흐린 막대 = 가계 제외</span>' : '')+'</div>';
   if(marks.length) h += '<div style="margin-top:8px">'+marks.map(function(m, n){
     return '<div class="row" onclick="'+m.on+'"><div style="width:22px;height:22px;border-radius:50%;background:var(--warn);color:#1a1205;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex:none">'+(n+1)+'</div>'+
       '<div class="m"><div class="t">'+esc(m.t)+' <span class="tiny">('+ymDot(idxYm(m.i))+')</span></div></div>'+(m.amt!=null?'<div class="v '+(m.amt<0?'neg':'pos')+'">'+(m.amt>=0?'+':'')+fm(m.amt)+'</div>':'')+'</div>'; }).join('')+'</div>';
+  h += lumpExtras();
   return h + '</div>';
 }
 // 달 입력 + −1년/−1개월/+1개월/+1년
@@ -1811,6 +1844,13 @@ function familyMilestones(){
   });
   return out.sort(function(a,b){ return a.i - b.i; });
 }
+function milestoneCard(){
+  var h = '<div class="card"><h2>이정표<span class="sp"></span><span class="tiny">나이에 따라 생기는 일</span></h2>';
+  var ms = familyMilestones();
+  if(ms.length) h += ms.map(function(m){ return '<div class="row" style="cursor:default"><div class="m"><div class="tiny num">'+ymDot(idxYm(m.i))+'</div><div>'+m.text+'</div></div></div>'; }).join('');
+  if(!familyMilestones().length) h += '<div class="empty">가족 생년월일을 넣으면 연금 수령 가능, 성년 같은 시점이 보입니다</div>';
+  return h + '</div>';
+}
 function viewFamily(){
   var h = '<div class="card R"><h2>가족 나이<span class="sp"></span><button class="btn sm" onclick="editFamily()">+ 추가</button></h2>';
   if(!S.family.length) return h + '<div class="empty">생일을 넣으면 목돈 일정과 지출 표에 그때 나이가 함께 보입니다</div></div>';
@@ -1821,8 +1861,6 @@ function viewFamily(){
   h += '<div class="tblwrap"><table style="font-size:var(--f-xs)"><tr><th>연말</th>'+S.family.map(function(f){ return '<th style="cursor:pointer;text-decoration:underline dotted" onclick="editFamily(\''+f.id+'\')">'+esc(famName(f))+'</th>'; }).join('')+'</tr>'+
     ys.map(function(y){ return '<tr><td>'+y+'</td>'+S.family.map(function(f){ var a = ageAt(f.birth, y*12+11); return '<td>'+(a==null?'':a)+'</td>'; }).join('')+'</tr>'; }).join('')+'</table></div>'+
     '<div class="tiny" style="margin:6px 0 10px">이름을 누르면 생일·관계 수정</div>';
-  var ms = familyMilestones();
-  if(ms.length) h += '<div class="grp big" style="margin-top:14px"><span>나이에 따라 생기는 일</span></div>'+ms.slice(0, 8).map(function(m){ return '<div class="row" style="cursor:default"><div class="m"><div class="tiny num">'+ymDot(idxYm(m.i))+'</div><div>'+m.text+'</div></div></div>'; }).join('');
   return h + '</div>';
 }
 // 그해 연말 나이를 고치면 생년이 바뀌어 모든 연도 나이가 함께 바뀜 (생일 월·일은 그대로)
@@ -1894,6 +1932,8 @@ function viewFam(){
   var list = S.family.slice().sort(function(a,b){ return ord(a) - ord(b); });
   var earners = list.filter(function(f){ return memberOf(f); }), inH = earners.filter(function(f){ return inHouse(memberOf(f)); });
   var h = kpis([['가족', list.length+'명'], ['소득 있는 사람', earners.length+'명', '', inH.length !== earners.length ? '가계 포함 '+inH.length+'명' : ''], ['월 부양비', fm(sum(S.expenses.filter(function(x){ return x.dep && inHouse(x.owner) && expActive(x, now); }), function(x){ return num(x.monthly); })), 'neg']]);
+  var head = h + '<div class="chips">'+[['mem','구성원'],['tl','타임라인'],['age','나이'],['ms','이정표']].map(function(c){ return '<button class="chip '+(FSUB===c[0]?'on':'')+'" onclick="setFsub(\''+c[0]+'\')">'+c[1]+'</button>'; }).join('')+'</div>';
+  h = '';
   h += '<div class="card"><h2>구성원<span class="sp"></span>'+(hasSpouse()?'':'<button class="btn sub sm" onclick="addSpouse()">+ 배우자</button>')+'<button class="btn sm" style="margin-left:6px" onclick="editFamily()">+ 추가</button></h2>';
   if(!list.length) h += '<div class="empty">설정 마법사를 하거나 + 추가로 가족을 넣으세요</div>';
   list.forEach(function(f){
@@ -1908,9 +1948,11 @@ function viewFam(){
       (key ? '<button class="btn sub sm" onclick="editIncome(\'\',\''+esc(key)+'\')">+ 소득 (연금 등)</button>' : '')+'</div>';
   });
   h += '<div class="tiny" style="margin-top:8px">소득이 있는 자녀·부모는 명의를 가질 수 있습니다. \'가계에 포함\'한 사람만 현금흐름·예산·시뮬레이션에 더해집니다.</div></div>';
-  h += viewTimeline();
-  h += viewFamily();
-  return h;
+  h = h.replace('@@MEM@@', '');
+  if(FSUB === 'tl') return head + viewTimeline();
+  if(FSUB === 'age') return head + viewFamily();
+  if(FSUB === 'ms') return head + milestoneCard();
+  return head + h;
 }
 
 /* ════════ 배분 (버킷) ════════ */
