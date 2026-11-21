@@ -100,6 +100,8 @@ h2.ttl{font-size:19px;font-weight:800;color:var(--accent);padding-left:10px;bord
 .pnet{margin-left:auto;text-align:right}
 .pnet>div:first-child{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
 .pchip.gapc{background:transparent;border:1px solid var(--warn);color:var(--warn);cursor:default}
+.rrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:var(--f-sm);color:var(--t2);margin:-2px 0 10px}
+.rrow input{width:76px;padding:6px 8px;border-radius:8px;border:1px solid var(--bd);background:var(--s2);color:var(--t1);font-size:var(--f-md);text-align:right}
 .grp.big{font-size:19px;font-weight:700;color:var(--t1);margin:20px 2px 4px;padding-bottom:6px;border-bottom:1px solid var(--bd)}
 .grp.big:first-of-type{margin-top:4px}
 .btn{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;font-size:var(--f-sm)}
@@ -187,7 +189,7 @@ svg text{font-family:var(--mono)}
   .simL{position:sticky;top:80px} .simL>.card,.simR>.card{margin:0 0 16px}
   .g-todo,.g-fam{max-width:1000px;margin:0 auto}
   .g-fam .card{margin-bottom:16px}
-  .g-dash .lay{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .g-dash .lay,.g-alloc .lay{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .dnut-big{gap:28px!important;justify-content:center;padding:10px 0}
   .dnut-big svg{width:260px;height:260px}
   .dnut-big .legend{flex:0 1 auto!important;gap:14px!important;font-size:var(--f-md)}
@@ -239,7 +241,7 @@ function defaultData(){
     version:1,
     members:[{name:'본인', nick:'', job:'company'}],
     assets:[], debts:[], incomes:[], lumps:[],
-    sim:{rate:4, lifeStart:'', saveBefore:0, spend:300, endYear:2070},
+    sim:{rate:4, infl:2.5, nomR:'', nomG:'', nomL:6, lifeStart:'', saveBefore:0, spend:300, endYear:2070},
     checklist:[],
     buckets:{reserve:{target:null}, gap:{target:null}},
     moves:[],          // 버킷 이동 계획 {id, month, text, done}
@@ -274,6 +276,10 @@ function normalize(d){
   if(!Array.isArray(d.expenses)) d.expenses = [];
   if(!Array.isArray(d.family)) d.family = [];
   fixMemberKeys(d);
+  if(d.sim && d.sim.infl == null){   // 실질 수익률(시뮬) → 예산 통별 명목 목표 수익률로 옮김 (물가 2.5% 가정)
+    var r2n = function(r){ return r === '' || r == null ? '' : Math.round((num(r) + 2.5)*10)/10; };
+    d.sim.infl = 2.5; d.sim.nomL = r2n(d.sim.rate); d.sim.nomR = r2n(d.sim.rateR); d.sim.nomG = r2n(d.sim.rateG);
+  }
   if(Array.isArray(d.expenses) && !d.catSplit){   // 관리비·통신, 용돈·식대 분리
     d.expenses.forEach(function(x){
       if(x.cat === 'house' && /통신|휴대폰|핸드폰|인터넷|요금제|TV/i.test(x.name || '')) x.cat = 'telecom';
@@ -423,9 +429,11 @@ function lumpNext(x, from){
 }
 // 금융자산 시뮬레이션 (실질, 만원). 생활비 시작 전: 월 저축액만 더함 / 시작 후: 소득 − 생활비
 function simRates(){
-  var g = num(S.sim.rate), rr = S.sim.rateR, rg = S.sim.rateG;
-  return {reserve: rr === '' || rr == null ? g : num(rr), gap: rg === '' || rg == null ? g : num(rg), growth: g};
+  var inf = S.sim.infl === '' || S.sim.infl == null ? 2.5 : num(S.sim.infl);
+  var real = function(n){ var v = n === '' || n == null ? inf : num(n); return ((1 + v/100) / (1 + inf/100) - 1) * 100; };
+  return {reserve:real(S.sim.nomR), gap:real(S.sim.nomG), growth:real(S.sim.nomL)};
 }
+function inflRate(){ return S.sim.infl === '' || S.sim.infl == null ? 2.5 : num(S.sim.infl); }
 function simulate(){
   // 금융자산을 예산 통(① 생활 예비 ② 공백 대비 ③ 장기투자)별로 굴림. 모자라면 ② → ① → ③ 순서로 꺼내 씀, 남으면 ③에 더함
   var sim = S.sim, R = simRates(), mr = {};
@@ -849,15 +857,13 @@ function viewSim(){
   var pts = r.years.map(function(y){ return {x:String(y.y).slice(2), y:y.bal}; });
   var marks = [{x:String(Math.floor((ymIdx(s.lifeStart)||nowIdx())/12)).slice(2), t:'생활비 시작', c:'var(--warn)'}];
   var h = '<div class="simL"><div class="card"><h2>가정</h2><div class="grid2">'+
-    simField('③ 장기 수익률 (%/년)', 'rate', 'number', '0.5')+
-    simField('① 생활 예비 수익률', 'rateR', 'number', '0.5')+
-    simField('② 공백 대비 수익률', 'rateG', 'number', '0.5')+
+    simField('물가상승률 (%/년)', 'infl', 'number', '0.1')+
     simField('급여 상승률 (%/년)', 'salGrow', 'number', '0.1')+
     simField('생활비 시작 (년-월)', 'lifeStart', 'month')+
     simField('그 전 월 저축액 (만원)', 'saveBefore', 'number', '10')+
     simField('기본 월 생활비 (만원)', 'spend', 'number', '10')+
     simField('계산 종료 연도', 'endYear', 'number', '1')+
-    '</div><div class="tiny">물가를 뺀 실질 기준 · 금융자산만 계산 (부동산 제외)<br>은퇴 전: 월 저축액 더함 · 은퇴 후: 월 소득 − 생활비<br>목돈은 해당 월 반영 · 모자라면 ② → ① → ③ 순서로 꺼내 씀</div></div>';
+    '</div><div class="tiny">물가를 뺀 실질 기준 · 금융자산만 계산 (부동산 제외)<br>수익률은 예산 탭에서 목적별로 넣습니다 (비우면 물가상승률)<br>은퇴 전: 월 저축액 더함 · 은퇴 후: 월 소득 − 생활비<br>목돈은 해당 월 반영 · 모자라면 ② → ① → ③ 순서로 꺼내 씀</div></div>';
   var ph = sortedPhases();
   h += '<div class="card"><h2>생활비 계산 방식</h2><div class="chips" style="margin:0">'+
     '<button class="chip '+(s.spendMode!=='expenses'?'on':'')+'" onclick="setSim(\'spendMode\',\'manual\',\'month\')">직접 입력 (기본 + 구간)</button>'+
@@ -901,7 +907,7 @@ function savePhase(id){
   closeModal(); commit();
 }
 function delPhase(id){ if(!confirm('삭제할까요?')) return; S.sim.phases = S.sim.phases.filter(function(x){ return x.id !== id; }); closeModal(); commit(); }
-function setSim(k, v, type){ S.sim[k] = type === 'month' ? v : num(v); commit(); }
+function setSim(k, v, type){ S.sim[k] = type === 'month' ? v : (String(v).trim() === '' ? '' : num(v)); commit(); }
 
 function viewTodo(){
   var h = '<div class="card"><h2>확인할 일<span class="sp"></span><span class="tiny">'+S.checklist.filter(function(c){ return c.done; }).length+' / '+S.checklist.length+'</span></h2>';
@@ -2175,6 +2181,9 @@ function viewAlloc(){
     var c = cur[k], pl = sum(planned[k], function(l){ return num(l.amount); });
     h += '<div class="card"><h2><span style="color:'+BUCKET_COLOR[k]+'">●</span> '+BUCKETS[k]+'<span class="sp"></span>'+(k!=='growth'?'<button class="btn sub sm" onclick="editTarget(\''+k+'\')">목표</button>':'')+'</h2>'+
       '<div class="tiny" style="margin-bottom:10px">'+BUCKET_DESC[k]+'</div>';
+    var rk = {reserve:'nomR', gap:'nomG', growth:'nomL'}[k], rv = S.sim[rk];
+    h += '<label class="rrow">목표 수익률<input type="number" step="0.1" inputmode="decimal" value="'+(rv === '' || rv == null ? '' : esc(rv))+'" placeholder="'+inflRate()+'" onchange="setSim(\''+rk+'\', this.value)">%/년'+
+      '<span class="tiny">'+(rv === '' || rv == null ? '비우면 물가상승률 '+inflRate()+'% (실질 0%)' : '실질 '+(Math.round(simRates()[k]*10)/10)+'%')+'</span></label>';
     if(k === 'growth'){
       h += '<div class="grid2"><div class="kv"><div class="k">현재</div><div class="v">'+fm(c)+'</div></div><div class="kv"><div class="k">금융자산 중 비중</div><div class="v">'+(fin?Math.round(c/fin*100):0)+'%</div></div></div>';
     } else {
@@ -2228,7 +2237,7 @@ var W = null;
 function wv(id){ var e = document.getElementById(id); return e ? e.value : ''; }
 function wn(id){ return num(wv(id)); }
 function startWizard(){
-  W = {step:0, couple:false, kids:0, pn:0, me:{job:'company'}, sp:{job:'company'}, children:[], parents:[], a:{}, e:{}, retSpend:'', rate:4};
+  W = {step:0, couple:false, kids:0, pn:0, me:{job:'company'}, sp:{job:'company'}, children:[], parents:[], a:{}, e:{}, retSpend:'', rate:6};
   wizShow();
 }
 function wizSave(){   // 지금 단계 입력값을 W 에 담기
@@ -2309,8 +2318,8 @@ function wizShow(){
     h = dots+'<h3>매달 나가는 돈 (만원)</h3><div class="grid2">'+
       Object.keys(EXP_CATS).filter(function(k){ return k !== 'saving'; }).map(function(k){ return wf(EXP_CATS[k], 'w_e_'+k, E[k], 'number'); }).join('')+'</div>'+
       '<h3 style="margin-top:6px">은퇴 후</h3>'+wf('은퇴 후 월 생활비 (지금 돈 가치)', 'w_rs', W.retSpend, 'number', '예: 300')+
-      wf('예상 수익률 % (물가를 뺀 실질)', 'w_rate', W.rate, 'number')+
-      '<div class="tiny">실질 수익률은 보수적으로 2~4%를 권합니다. 언제든 시뮬 탭에서 바꿀 수 있습니다'+(W.parents.some(function(p){ return num(p.dep) > 0; }) ? '. 부모님 단계에서 넣은 부양비는 \'부모님 지원\'에 다시 넣지 마세요' : '')+'</div>';
+      wf('장기투자 목표 수익률 % (연, 명목)', 'w_rate', W.rate, 'number')+
+      '<div class="tiny">물가상승률 2.5%를 포함한 수익률입니다. 보수적으로 5~6%를 권하며, 예산 탭에서 목적별로 바꿀 수 있습니다'+(W.parents.some(function(p){ return num(p.dep) > 0; }) ? '. 부모님 단계에서 넣은 부양비는 \'부모님 지원\'에 다시 넣지 마세요' : '')+'</div>';
   }
   if(s > 0) h += '<div class="btns"><button class="btn sub" onclick="wizGo(-1)">이전</button><span style="flex:1"></span><button class="btn" onclick="wizGo(1)">'+(s === 7 ? '완료' : '다음')+'</button></div>';
   openModal(h);
@@ -2352,7 +2361,7 @@ function wizFinish(){
   var meF = S.family.find(function(f){ return f.rel === '본인'; });
   S.sim.lifeStart = meF && meF.birth ? addMonths(idxYm(retireIdx(meF)), 1) : '';
   if(num(W.retSpend) > 0) S.sim.spend = num(W.retSpend);
-  S.sim.rate = W.rate === '' ? 4 : num(W.rate);
+  S.sim.nomL = W.rate === '' ? 6 : num(W.rate);
   if(meF && meF.birth) S.sim.endYear = Number(meF.birth.slice(0,4)) + 95;
   var exp = Object.keys(W.e).reduce(function(s, k){ return s + num(W.e[k]); }, 0);
   S.sim.saveBefore = Math.round(people.reduce(function(s, x){ return s + num(x[1].pay); }, 0) - exp - num(A.pay));
@@ -2369,7 +2378,7 @@ function loadDemo(){
     sp:{nick:'지영', birth:(y-45)+'-08-02', job:'public', pay:'380', retire:'', pStart:'', pAmt:'220'},
     children:[{name:'하늘', birth:(y-15)+'-05-10', army:'none'}, {name:'바다', birth:(y-12)+'-11-20', army:''}],
     a:{home:'90000', re2:'', cash:'4000', stock:'15000', pension:'8000', mutual:'3000', other:'', loan:'25000', rate:'4.0', pay:'150'},
-    e:{living:'280', insurance:'60', edu:'120', house:'45', tax:'10', allowance:'90', etc:'20'}, retSpend:'350', rate:'3'};
+    e:{living:'280', insurance:'60', edu:'120', house:'45', tax:'10', allowance:'90', etc:'20'}, retSpend:'350', rate:'5.5'};
   wizFinish();
   S.demo = true; S.lumps.push({id:uid(), name:'하늘 대학 등록금', amount:-1600, month:(y+4)+'-03', repeat:true, until:(y+7)+'-03', note:'연 4회분 합산'});
   commit(); toast('예시 가구입니다 · 설정에서 \'장부 지우기\'로 내 장부를 시작하세요');
