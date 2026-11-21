@@ -768,7 +768,6 @@ function viewDash(){
 function viewAssets(){
   var t = totals(), h = ownerChips();
   h += kpis(Object.keys(CATS).filter(function(c){ return t.byCat[c] > 0; }).map(function(c){ return [CATS[c], fm(t.byCat[c]), '', t.assets ? Math.round(t.byCat[c]/t.assets*100)+'%' : '']; }).concat([['부채', '−'+fm(t.debts), 'neg']]));
-  h += '<!--SUM-->';   // 맨 위: 총자산·순자산·명의별 자산 (아래에서 채움)
   // 자산: 카드 밖 큰 제목 줄 + 분류마다 카드
   h += '<div class="sec-h"><span class="ttl2">자산</span><span class="num sec-sum">'+fm(byOwner(S.assets).reduce(function(s,a){ return s + num(a.value); }, 0))+'</span><span style="flex:1"></span><button class="btn sm" onclick="editAsset()">+ 추가</button></div>';
   if(!byOwner(S.assets).length) h += '<div class="card"><div class="empty">'+(OWNER?'이 명의의 자산이 없습니다':'아직 자산이 없습니다')+'</div></div>';
@@ -795,9 +794,6 @@ function viewAssets(){
     h += '<div class="row" onclick="editDebt(\''+d.id+'\')"><div class="m"><div class="t">'+esc(d.name)+'</div>'+(di.length?'<div class="tiny">'+di.join(' · ')+'</div>':'')+'</div><div class="v neg">−'+fm(num(d.value))+'</div></div>';
   });
   h += '</div>';
-  var sumCard = '<div class="card R"><div class="grid2"><div class="kv"><div class="k">총자산</div><div class="v">'+fm(t.assets)+'</div></div><div class="kv"><div class="k">순자산</div><div class="v">'+fm(t.net)+'</div></div></div>'+
-    '<div class="tiny" style="margin-top:10px">금액 단위는 만원입니다</div></div>';
-  h = h.replace('<!--SUM-->', sumCard);
   return h;
 }
 
